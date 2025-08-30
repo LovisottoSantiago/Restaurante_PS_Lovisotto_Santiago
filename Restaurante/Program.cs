@@ -1,4 +1,8 @@
+using Application.Interfaces;
+using Application.UseCases;
+using Infrastructure.Commands;
 using Infrastructure.Persistence;
+using Infrastructure.Queries;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,11 +14,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 // Custom: mis inyecciones
 var ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(ConnectionString));
 
+builder.Services.AddScoped<IStatusCommand, StatusCommand>();
+builder.Services.AddScoped<IStatusQuery, StatusQuery>();
+builder.Services.AddScoped<IStatusService, StatusService>();
+
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
