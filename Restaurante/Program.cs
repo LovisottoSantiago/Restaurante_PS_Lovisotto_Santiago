@@ -4,24 +4,45 @@ using Infrastructure.Commands;
 using Infrastructure.Persistence;
 using Infrastructure.Queries;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
 // Custom: mis inyecciones
-var ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(ConnectionString));
+// Swagger
+builder.Services.AddSwaggerGen(c =>
+{
+    c.EnableAnnotations();
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "RestaurantAPI",
+        Version = "1.0",
+        Description = "API para la gestión de platos en un restaurante"
+    });
 
-builder.Services.AddScoped<IStatusCommand, StatusCommand>();
-builder.Services.AddScoped<IStatusQuery, StatusQuery>();
-builder.Services.AddScoped<IStatusService, StatusService>();
+    // XML comments (para descripciones en Swagger UI)
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
+});
+
+// Database
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+
+// Dependency Injection
+builder.Services.AddScoped<IDishCommand, DishCommand>();
+builder.Services.AddScoped<IDishQuery, DishQuery>();
+builder.Services.AddScoped<IDishService, DishService>();
 
 var app = builder.Build();
 

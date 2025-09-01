@@ -4,32 +4,31 @@ using Infrastructure.Persistence;
 
 namespace Infrastructure.Commands
 {
-    public class StatusCommand : IStatusCommand
+    public class DishCommand : IDishCommand
     {
         private readonly AppDbContext _context;
 
-        public StatusCommand(AppDbContext context)
+        public DishCommand(AppDbContext context)
         {
             _context = context;
         }
 
-        public async Task CreateAsync(Status status)
+        public async Task CreateAsync(Dish dish)
         {
-            _context.Statuses.Add(status);
+            _context.Dishes.Add(dish);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Status status)
+        public async Task UpdateAsync(Dish dish)
         {
-            _context.Statuses.Update(status);
+            _context.Dishes.Update(dish);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Status status)
+        public async Task DeleteAsync(Dish dish)
         {
-            _context.Statuses.Remove(status);
+            _context.Dishes.Remove(dish);
             await _context.SaveChangesAsync();
         }
-
     }
 }
