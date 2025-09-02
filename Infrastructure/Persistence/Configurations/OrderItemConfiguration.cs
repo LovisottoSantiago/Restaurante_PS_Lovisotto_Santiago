@@ -22,18 +22,20 @@ namespace Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasDefaultValueSql("GETDATE()");
 
-            builder.HasOne(orderItem => orderItem.Dish)
+            builder.HasOne(orderItem => orderItem.DishNavigation)
                 .WithMany(dish => dish.OrderItems)
-                .HasForeignKey("DishId"); // shadow property
+                .HasForeignKey(orderItem => orderItem.Dish)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(orderItem => orderItem.Order)
+            builder.HasOne(orderItem => orderItem.OrderNavigation)
                 .WithMany(order => order.OrderItems)
-                .HasForeignKey("OrderId"); // shadow property
+                .HasForeignKey(orderItem => orderItem.Order)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(orderItem => orderItem.Status)
+            builder.HasOne(orderItem => orderItem.StatusNavigation)
                 .WithMany(status => status.OrderItems)
-                .HasForeignKey("StatusId") // shadow property
-            .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(orderItem => orderItem.Status) 
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
     }

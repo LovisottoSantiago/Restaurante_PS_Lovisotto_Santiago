@@ -165,7 +165,7 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("Available")
                         .HasColumnType("bit");
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int>("Category")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreateDate")
@@ -196,7 +196,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("DishId");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("Category");
 
                     b.HasIndex("Name")
                         .IsUnique();
@@ -222,14 +222,14 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("DeliveryTypeId")
+                    b.Property<int>("DeliveryType")
                         .HasColumnType("int");
 
                     b.Property<string>("Notes")
                         .IsRequired()
                         .HasColumnType("varchar(MAX)");
 
-                    b.Property<int>("OverallStatusId")
+                    b.Property<int>("OverallStatus")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
@@ -242,9 +242,9 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("OrderId");
 
-                    b.HasIndex("DeliveryTypeId");
+                    b.HasIndex("DeliveryType");
 
-                    b.HasIndex("OverallStatusId");
+                    b.HasIndex("OverallStatus");
 
                     b.ToTable("Order", (string)null);
                 });
@@ -262,29 +262,29 @@ namespace Infrastructure.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<Guid>("DishId")
+                    b.Property<Guid>("Dish")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Notes")
                         .IsRequired()
                         .HasColumnType("varchar(MAX)");
 
-                    b.Property<long>("OrderId")
+                    b.Property<long>("Order")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int>("StatusId")
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("OrderItemId");
 
-                    b.HasIndex("DishId");
+                    b.HasIndex("Dish");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("Order");
 
-                    b.HasIndex("StatusId");
+                    b.HasIndex("Status");
 
                     b.ToTable("OrderItem", (string)null);
                 });
@@ -336,59 +336,59 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Dish", b =>
                 {
-                    b.HasOne("Domain.Entities.Category", "Category")
+                    b.HasOne("Domain.Entities.Category", "CategoryNavigation")
                         .WithMany("Dishes")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("Category")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Category");
+                    b.Navigation("CategoryNavigation");
                 });
 
             modelBuilder.Entity("Domain.Entities.Order", b =>
                 {
-                    b.HasOne("Domain.Entities.DeliveryType", "DeliveryType")
+                    b.HasOne("Domain.Entities.DeliveryType", "DeliveryTypeNavigation")
                         .WithMany("Orders")
-                        .HasForeignKey("DeliveryTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("DeliveryType")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Status", "OverallStatus")
+                    b.HasOne("Domain.Entities.Status", "OverallStatusNavigation")
                         .WithMany("Orders")
-                        .HasForeignKey("OverallStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("OverallStatus")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("DeliveryType");
+                    b.Navigation("DeliveryTypeNavigation");
 
-                    b.Navigation("OverallStatus");
+                    b.Navigation("OverallStatusNavigation");
                 });
 
             modelBuilder.Entity("Domain.Entities.OrderItem", b =>
                 {
-                    b.HasOne("Domain.Entities.Dish", "Dish")
+                    b.HasOne("Domain.Entities.Dish", "DishNavigation")
                         .WithMany("OrderItems")
-                        .HasForeignKey("DishId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Order", "Order")
-                        .WithMany("OrderItems")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Status", "Status")
-                        .WithMany("OrderItems")
-                        .HasForeignKey("StatusId")
+                        .HasForeignKey("Dish")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Dish");
+                    b.HasOne("Domain.Entities.Order", "OrderNavigation")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("Order")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("Order");
+                    b.HasOne("Domain.Entities.Status", "StatusNavigation")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("Status")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("Status");
+                    b.Navigation("DishNavigation");
+
+                    b.Navigation("OrderNavigation");
+
+                    b.Navigation("StatusNavigation");
                 });
 
             modelBuilder.Entity("Domain.Entities.Category", b =>

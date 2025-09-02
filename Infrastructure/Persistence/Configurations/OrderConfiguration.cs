@@ -31,13 +31,15 @@ namespace Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasDefaultValueSql("GETDATE()");
 
-            builder.HasOne(order => order.DeliveryType)
+            builder.HasOne(order => order.DeliveryTypeNavigation)
                 .WithMany(deliveryType => deliveryType.Orders)
-                .HasForeignKey("DeliveryTypeId"); // shadow property
+                .HasForeignKey(order => order.DeliveryType)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(order => order.OverallStatus)
+            builder.HasOne(order => order.OverallStatusNavigation)
                 .WithMany(overallStatus => overallStatus.Orders)
-                .HasForeignKey("OverallStatusId"); // shadow property
+                .HasForeignKey(order => order.OverallStatus)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
     }

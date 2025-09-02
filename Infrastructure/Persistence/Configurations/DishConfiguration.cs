@@ -41,9 +41,10 @@ namespace Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasDefaultValueSql("GETDATE()");
 
-            builder.HasOne(dish => dish.Category)
+            builder.HasOne(dish => dish.CategoryNavigation)
                 .WithMany(category => category.Dishes)
-                .HasForeignKey("CategoryId"); // shadow property
+                .HasForeignKey(dish => dish.Category) 
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
     }

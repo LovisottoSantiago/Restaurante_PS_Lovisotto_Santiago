@@ -4,8 +4,8 @@ namespace Application.Interfaces
 {
     public interface IDishCommand
     {
-        Task CreateAsync(Dish dish, int categoryId);
-        Task UpdateAsync(Dish dish, int categoryId);
+        Task CreateAsync(Dish dish);
+        Task UpdateAsync(Dish dish);
         Task DeleteAsync(Dish dish);
     }
 }
