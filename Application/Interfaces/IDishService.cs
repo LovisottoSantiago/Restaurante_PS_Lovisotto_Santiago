@@ -7,8 +7,8 @@ namespace Application.Interfaces
     {
         Task<IReadOnlyList<DishResponse>> GetAllAsync(string? name, int? categoryId, string? sortDirection);
         Task<DishResponse?> GetByIdAsync(Guid id);
-        Task<DishResponse> CreateAsync(CreateDishRequest request);
-        Task<DishResponse> UpdateAsync(Guid id, UpdateDishRequest request);
+        Task<DishResponse> CreateAsync(DishRequest request);
+        Task<DishResponse> UpdateAsync(Guid id, DishUpdateRequest request);
         Task<bool> DeleteAsync(Guid id);
     }
 }

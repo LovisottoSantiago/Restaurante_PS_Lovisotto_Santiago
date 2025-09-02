@@ -5,35 +5,33 @@ using Infrastructure.Persistence;
 using Infrastructure.Queries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Restaurante.Examples;
 using Swashbuckle.AspNetCore.Filters;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 
 // Custom: mis inyecciones
-// Swagger
 builder.Services.AddSwaggerGen(c =>
 {
     c.EnableAnnotations();
+    c.ExampleFilters();
     c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "RestaurantAPI",
         Version = "1.0",
-        Description = "API para la gestión de platos en un restaurante"
+        Description = "API para la gestión de platos en un restaurante",
+        Contact = new OpenApiContact
+        {
+            Name = "Restaurant API Support",
+            Email = "lolivera@unaj.edu.ar"
+        }
     });
-
-    // XML comments (para descripciones en Swagger UI)
-    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    c.IncludeXmlComments(xmlPath);
 });
+builder.Services.AddSwaggerExamplesFromAssemblyOf<DishRequestExample>();
 
 // Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

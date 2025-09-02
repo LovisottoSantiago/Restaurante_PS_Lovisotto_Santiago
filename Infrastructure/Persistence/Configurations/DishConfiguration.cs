@@ -30,17 +30,20 @@ namespace Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(dish => dish.ImageUrl)
+                .IsRequired()
                 .HasColumnType("varchar(MAX)");
 
             builder.Property(dish => dish.CreateDate)
+                .IsRequired()
                 .HasDefaultValueSql("GETDATE()");
 
             builder.Property(dish => dish.UpdateDate)
+                .IsRequired()
                 .HasDefaultValueSql("GETDATE()");
 
             builder.HasOne(dish => dish.Category)
                 .WithMany(category => category.Dishes)
-                .HasForeignKey(dish => dish.CategoryId);
+                .HasForeignKey("CategoryId"); // shadow property
         }
 
     }

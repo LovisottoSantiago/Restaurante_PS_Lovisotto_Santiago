@@ -1,5 +1,4 @@
 ﻿using Application.Interfaces;
-using Application.Mappers;
 using Application.Models;
 using Application.Response;
 using Domain.Entities;
@@ -21,7 +20,22 @@ namespace Application.UseCases
         {
             var dishEntities = await _query.GetAllAsync(nameFilter, categoryFilter, sortDirection);
 
-            return dishEntities.Select(dishEntity => dishEntity.ToResponse()).ToList();
+            return dishEntities.Select(dishEntity => new DishResponse
+            {
+                Id = dishEntity.DishId,
+                Name = dishEntity.Name,
+                Description = dishEntity.Description,
+                Price = dishEntity.Price,
+                IsActive = dishEntity.Available,
+                Image = dishEntity.ImageUrl,
+                CreatedAt = dishEntity.CreateDate,
+                UpdatedAt = dishEntity.UpdateDate,
+                Category = new CategoryResponse
+                {
+                    Id = dishEntity.Category.Id,
+                    Name = dishEntity.Category.Name
+                }
+            }).ToList();
         }
 
         public async Task<DishResponse?> GetByIdAsync(Guid dishId)
@@ -31,26 +45,28 @@ namespace Application.UseCases
 
             return new DishResponse
             {
-                DishId = dishEntity.DishId,
+                Id = dishEntity.DishId,
                 Name = dishEntity.Name,
                 Description = dishEntity.Description,
                 Price = dishEntity.Price,
-                Available = dishEntity.Available,
-                ImageUrl = dishEntity.ImageUrl,
-                CreateDate = dishEntity.CreateDate,
-                UpdateDate = dishEntity.UpdateDate,
+                IsActive = dishEntity.Available,
+                Image = dishEntity.ImageUrl,
+                CreatedAt = dishEntity.CreateDate,
+                UpdatedAt = dishEntity.UpdateDate,
                 Category = new CategoryResponse
                 {
-                    CategoryId = dishEntity.Category.Id,
+                    Id = dishEntity.Category.Id,
                     Name = dishEntity.Category.Name
                 }
             };
         }
 
-        public async Task<DishResponse> CreateAsync(CreateDishRequest newDishRequest)
+        public async Task<DishResponse> CreateAsync(DishRequest newDishRequest)
         {
-            var existingDishes = await _query.GetAllAsync(newDishRequest.Name, null, null);
-            if (existingDishes.Any(d => d.Name == newDishRequest.Name))
+            if (newDishRequest.Price <= 0)
+                throw new ArgumentException("El precio debe ser mayor a 0");
+            
+            if (await _query.ExistsByNameAsync(newDishRequest.Name))
                 throw new InvalidOperationException("Ya existe un plato con ese nombre");
 
             var newDishEntity = new Dish
@@ -59,66 +75,66 @@ namespace Application.UseCases
                 Name = newDishRequest.Name,
                 Description = newDishRequest.Description,
                 Price = newDishRequest.Price,
-                Available = newDishRequest.Available,
-                ImageUrl = newDishRequest.ImageUrl,
-                CategoryId = newDishRequest.CategoryId,
+                Available = newDishRequest.IsActive,
+                ImageUrl = newDishRequest.Image,
                 CreateDate = DateTime.UtcNow,
                 UpdateDate = DateTime.UtcNow
             };
 
-            await _command.CreateAsync(newDishEntity);
+            await _command.CreateAsync(newDishEntity, newDishRequest.Category);
 
             return new DishResponse
             {
-                DishId = newDishEntity.DishId,
+                Id = newDishEntity.DishId,
                 Name = newDishEntity.Name,
                 Description = newDishEntity.Description,
                 Price = newDishEntity.Price,
-                Available = newDishEntity.Available,
-                ImageUrl = newDishEntity.ImageUrl,
-                CreateDate = newDishEntity.CreateDate,
-                UpdateDate = newDishEntity.UpdateDate,
+                IsActive = newDishEntity.Available,
+                Image = newDishEntity.ImageUrl,
+                CreatedAt = newDishEntity.CreateDate,
+                UpdatedAt = newDishEntity.UpdateDate,
                 Category = new CategoryResponse
                 {
-                    CategoryId = newDishEntity.CategoryId,
-                    Name = newDishEntity.Category?.Name ?? string.Empty
+                    Id = newDishEntity.Category.Id,
+                    Name = newDishEntity.Category.Name
                 }
             };
         }
 
-        public async Task<DishResponse> UpdateAsync(Guid dishId, UpdateDishRequest updateDishRequest)
+        public async Task<DishResponse> UpdateAsync(Guid dishId, DishUpdateRequest updateDishRequest)
         {
             var dishEntity = await _query.GetByIdAsync(dishId);
             if (dishEntity == null) throw new KeyNotFoundException("Plato no encontrado");
 
-            var conflictingDishes = await _query.GetAllAsync(updateDishRequest.Name, null, null);
-            if (conflictingDishes.Any(d => d.Name == updateDishRequest.Name && d.DishId != dishId))
+            if (updateDishRequest.Price <= 0)
+                throw new ArgumentException("El precio debe ser mayor a 0");
+
+            if (await _query.ExistsByNameAsync(updateDishRequest.Name))
                 throw new InvalidOperationException("Ya existe un plato con ese nombre");
 
             dishEntity.Name = updateDishRequest.Name;
             dishEntity.Description = updateDishRequest.Description;
             dishEntity.Price = updateDishRequest.Price;
-            dishEntity.Available = updateDishRequest.Available;
-            dishEntity.ImageUrl = updateDishRequest.ImageUrl;
-            dishEntity.CategoryId = updateDishRequest.CategoryId;
+            dishEntity.Available = updateDishRequest.IsActive;
+            dishEntity.ImageUrl = updateDishRequest.Image;
             dishEntity.UpdateDate = DateTime.UtcNow;
 
-            await _command.UpdateAsync(dishEntity);
+            await _command.UpdateAsync(dishEntity, updateDishRequest.Category);
 
             return new DishResponse
             {
-                DishId = dishEntity.DishId,
+                Id = dishEntity.DishId,
                 Name = dishEntity.Name,
                 Description = dishEntity.Description,
                 Price = dishEntity.Price,
-                Available = dishEntity.Available,
-                ImageUrl = dishEntity.ImageUrl,
-                CreateDate = dishEntity.CreateDate,
-                UpdateDate = dishEntity.UpdateDate,
+                IsActive = dishEntity.Available,
+                Image = dishEntity.ImageUrl,
+                CreatedAt = dishEntity.CreateDate,
+                UpdatedAt = dishEntity.UpdateDate,
                 Category = new CategoryResponse
                 {
-                    CategoryId = dishEntity.CategoryId,
-                    Name = dishEntity.Category?.Name ?? string.Empty
+                    Id = dishEntity.Category.Id,
+                    Name = dishEntity.Category.Name
                 }
             };
         }

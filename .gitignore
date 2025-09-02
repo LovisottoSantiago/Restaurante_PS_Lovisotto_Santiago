@@ -375,5 +375,5 @@ FodyWeavers.xsd
 EntityFrameworkCore.Cache.deps.json
 
 # Development appsettings (keep the template)
-appsettings.Development.json
-appsettings.Local.json
+#appsettings.Development.json
+#appsettings.Local.json

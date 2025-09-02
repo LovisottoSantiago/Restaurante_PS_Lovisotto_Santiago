@@ -15,23 +15,25 @@ namespace Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(orderItem => orderItem.Notes)
+                .IsRequired()
                 .HasColumnType("varchar(MAX)");
 
             builder.Property(orderItem => orderItem.CreateDate)
+                .IsRequired()
                 .HasDefaultValueSql("GETDATE()");
 
             builder.HasOne(orderItem => orderItem.Dish)
                 .WithMany(dish => dish.OrderItems)
-                .HasForeignKey(orderItem => orderItem.DishId);
+                .HasForeignKey("DishId"); // shadow property
 
             builder.HasOne(orderItem => orderItem.Order)
                 .WithMany(order => order.OrderItems)
-                .HasForeignKey(orderItem => orderItem.OrderId);
+                .HasForeignKey("OrderId"); // shadow property
 
             builder.HasOne(orderItem => orderItem.Status)
                 .WithMany(status => status.OrderItems)
-                .HasForeignKey(orderItem => orderItem.StatusId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey("StatusId") // shadow property
+            .OnDelete(DeleteBehavior.Restrict);
         }
 
     }

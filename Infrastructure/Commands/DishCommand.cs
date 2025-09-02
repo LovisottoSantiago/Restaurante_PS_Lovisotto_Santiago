@@ -13,14 +13,16 @@ namespace Infrastructure.Commands
             _context = context;
         }
 
-        public async Task CreateAsync(Dish dish)
+        public async Task CreateAsync(Dish dish, int categoryId)
         {
+            _context.Entry(dish).Property("CategoryId").CurrentValue = categoryId;
             _context.Dishes.Add(dish);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Dish dish)
+        public async Task UpdateAsync(Dish dish, int categoryId)
         {
+            _context.Entry(dish).Property("CategoryId").CurrentValue = categoryId;
             _context.Dishes.Update(dish);
             await _context.SaveChangesAsync();
         }

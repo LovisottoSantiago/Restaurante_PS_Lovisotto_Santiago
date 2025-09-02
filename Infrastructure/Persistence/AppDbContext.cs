@@ -9,7 +9,6 @@ namespace Infrastructure.Persistence
         {
 
         }        
-
         public DbSet<Category> Categories { get; set; }
         public DbSet<DeliveryType> DeliveryTypes { get; set; }
         public DbSet<Dish> Dishes { get; set; }

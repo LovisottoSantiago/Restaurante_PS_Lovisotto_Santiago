@@ -17,19 +17,29 @@ namespace Restaurante.Controllers
             _dishService = dishService;
         }
 
-        /// <summary>
-        /// Crear un nuevo plato
-        /// </summary>
-        /// <remarks>Endpoint para registrar un nuevo plato en el sistema.</remarks>
+        // POST: /api/v1/Dish
         [HttpPost]
-        [SwaggerResponse(StatusCodes.Status201Created, "Plato creado correctamente", typeof(DishResponse))]
-        [SwaggerResponse(StatusCodes.Status409Conflict, "Ya existe un plato con el mismo nombre", typeof(object))]
-        public async Task<IActionResult> CreateDish([FromBody] CreateDishRequest createDishRequest)
+        [SwaggerOperation(
+            Summary = "Crear nuevo plato",
+            Description = @"Crea un nuevo plato en el menú del restaurante.
+
+            **Validaciones:**
+            - El nombre del plato debe ser único
+            - El precio debe ser mayor a 0
+            - La categoría debe existir
+            ")]
+        [SwaggerResponse(201, "Plato creado exitosamente", typeof(DishResponse))]
+        [SwaggerResponse(400, "Datos de entrada inválidos", typeof(ApiError))]
+        [SwaggerResponse(409, "Ya existe un plato con el mismo nombre", typeof(ApiError))]
+        public async Task<IActionResult> Create([FromBody] DishRequest request)
         {
+            if (request.Price <= 0 || string.IsNullOrWhiteSpace(request.Name))
+                return BadRequest(new ApiError { Message = "Datos inválidos" });
+
             try
             {
-                var createdDish = await _dishService.CreateAsync(createDishRequest);
-                return CreatedAtAction(nameof(GetDishById), new { id = createdDish.DishId }, createdDish);
+                var dish = await _dishService.CreateAsync(request);
+                return CreatedAtAction(nameof(GetById), new { id = dish.Id }, dish);
             }
             catch (InvalidOperationException)
             {
@@ -37,56 +47,79 @@ namespace Restaurante.Controllers
             }
         }
 
-        /// <summary>
-        /// Buscar platos
-        /// </summary>
-        /// <remarks>Permite filtrar por nombre, categoría y ordenar por precio (ASC o DESC).</remarks>
+        // GET: /api/v1/Dish
         [HttpGet]
-        [SwaggerResponse(StatusCodes.Status200OK, "Lista de platos obtenida correctamente", typeof(IEnumerable<DishResponse>))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, "El parámetro 'order' no es válido", typeof(object))]
-        public async Task<IActionResult> GetDishes([FromQuery] string? name, [FromQuery] int? categoryId, [FromQuery] string? order)
+        [SwaggerOperation(
+            Summary = "Buscar platos",
+            Description = @"Obtiene una lista de platos con filtros y ordenamiento.
+
+            **Filtros:**
+            - nombre (parcial)
+            - categoría
+            - activos/todos
+
+            **Ordenamiento:**
+            - precio asc/desc
+            ")]
+        [SwaggerResponse(200, "Lista de platos obtenida exitosamente", typeof(IEnumerable<DishResponse>))]
+        [SwaggerResponse(400, "Parámetros de búsqueda inválidos", typeof(ApiError))]
+        public async Task<IActionResult> GetAll(
+            [FromQuery] string? name,
+            [FromQuery] int? categoryId,
+            [FromQuery] string? sortDirection,
+            [FromQuery] bool onlyActive = true)
         {
-            if (!string.IsNullOrEmpty(order) && order.ToUpper() != "ASC" && order.ToUpper() != "DESC")
+            if (!string.IsNullOrEmpty(sortDirection) &&
+                sortDirection.ToUpper() != "ASC" &&
+                sortDirection.ToUpper() != "DESC")
             {
-                return BadRequest(new ApiError { Message = "El parámetro 'order' solo puede ser 'ASC' o 'DESC'." });
+                return BadRequest(new ApiError { Message = "Parámetros de ordenamiento inválidos" });
             }
 
-            var dishes = await _dishService.GetAllAsync(name, categoryId, order);
+            var dishes = await _dishService.GetAllAsync(name, categoryId, sortDirection);
+            if (onlyActive)
+                dishes = dishes.Where(d => d.IsActive).ToList();
+
             return Ok(dishes);
         }
 
-        /// <summary>
-        /// Obtener plato por ID
-        /// </summary>
-        [HttpGet("{id}")]
-        [ApiExplorerSettings(IgnoreApi = true)]
-        [ProducesResponseType(typeof(DishResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetDishById(Guid id)
+        // GET: /api/v1/Dish/{id}
+        [HttpGet("{id:guid}")]
+        [ApiExplorerSettings(IgnoreApi = true)] // Solo se usa internamente para CreatedAtAction
+        public async Task<IActionResult> GetById(Guid id)
         {
             var dish = await _dishService.GetByIdAsync(id);
             if (dish == null)
-            {
                 return NotFound(new ApiError { Message = "Plato no encontrado" });
-            }
 
             return Ok(dish);
         }
 
-        /// <summary>
-        /// Actualizar plato existente
-        /// </summary>
-        /// <remarks>Modifica los datos de un plato identificado por su ID.</remarks>
-        [HttpPut("{id}")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Plato actualizado correctamente", typeof(DishResponse))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "Plato no encontrado", typeof(object))]
-        [SwaggerResponse(StatusCodes.Status409Conflict, "Ya existe un plato con el mismo nombre", typeof(object))]
-        public async Task<IActionResult> UpdateDish(Guid id, [FromBody] UpdateDishRequest updateDishRequest)
+        // PUT: /api/v1/Dish/{id}
+        [HttpPut("{id:guid}")]
+        [SwaggerOperation(
+            Summary = "Actualizar plato existente",
+            Description = @"Actualiza todos los campos de un plato existente en el menú.
+
+            **Validaciones:**
+            - El plato debe existir
+            - El nombre debe ser único
+            - El precio debe ser mayor a 0
+            - La categoría debe existir
+            ")]
+        [SwaggerResponse(200, "Plato actualizado exitosamente", typeof(DishResponse))]
+        [SwaggerResponse(400, "Datos de entrada inválidos", typeof(ApiError))]
+        [SwaggerResponse(404, "Plato no encontrado", typeof(ApiError))]
+        [SwaggerResponse(409, "Conflicto - nombre duplicado", typeof(ApiError))]
+        public async Task<IActionResult> Update(Guid id, [FromBody] DishUpdateRequest request)
         {
+            if (request.Price <= 0)
+                return BadRequest(new ApiError { Message = "El precio debe ser mayor a cero" });
+
             try
             {
-                var updatedDish = await _dishService.UpdateAsync(id, updateDishRequest);
-                return Ok(updatedDish);
+                var dish = await _dishService.UpdateAsync(id, request);
+                return Ok(dish);
             }
             catch (KeyNotFoundException)
             {

@@ -16,6 +16,7 @@ namespace Infrastructure.Persistence.Configurations
                 .HasMaxLength(255);
 
             builder.Property(order => order.Notes)
+                .IsRequired()
                 .HasColumnType("varchar(MAX)");
 
             builder.Property(order => order.Price)
@@ -23,18 +24,20 @@ namespace Infrastructure.Persistence.Configurations
                 .HasColumnType("decimal(18,2)");
 
             builder.Property(order => order.CreateDate)
+                .IsRequired()
                 .HasDefaultValueSql("GETDATE()");
 
             builder.Property(order => order.UpdateDate)
+                .IsRequired()
                 .HasDefaultValueSql("GETDATE()");
 
             builder.HasOne(order => order.DeliveryType)
                 .WithMany(deliveryType => deliveryType.Orders)
-                .HasForeignKey(order => order.DeliveryTypeId);
+                .HasForeignKey("DeliveryTypeId"); // shadow property
 
             builder.HasOne(order => order.OverallStatus)
                 .WithMany(overallStatus => overallStatus.Orders)
-                .HasForeignKey(order => order.OverallStatusId);
+                .HasForeignKey("OverallStatusId"); // shadow property
         }
 
     }

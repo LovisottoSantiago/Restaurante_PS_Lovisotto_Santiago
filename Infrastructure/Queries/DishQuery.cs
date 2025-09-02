@@ -25,7 +25,7 @@ namespace Infrastructure.Queries
                 query = query.Where(d => d.Name.Contains(nameFilter));
 
             if (categoryFilter.HasValue)
-                query = query.Where(d => d.CategoryId == categoryFilter.Value);
+                query = query.Where(d => d.Category.Id == categoryFilter.Value);
 
             if (!string.IsNullOrEmpty(sortDirection))
             {
@@ -44,6 +44,11 @@ namespace Infrastructure.Queries
                 .Include(d => d.Category)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(d => d.DishId == id);
+        }
+
+        public async Task<bool> ExistsByNameAsync(string name)
+        {
+            return await _context.Dishes.AnyAsync(d => d.Name == name);
         }
     }
 }
