@@ -25,11 +25,11 @@ namespace Infrastructure.Persistence.Configurations
 
             builder.Property(order => order.CreateDate)
                 .IsRequired()
-                .HasDefaultValueSql("GETDATE()");
+                .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(order => order.UpdateDate)
                 .IsRequired()
-                .HasDefaultValueSql("GETDATE()");
+                .HasDefaultValueSql("GETUTCDATE()");
 
             builder.HasOne(order => order.DeliveryTypeNavigation)
                 .WithMany(deliveryType => deliveryType.Orders)

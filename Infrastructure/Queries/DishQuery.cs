@@ -35,5 +35,10 @@ namespace Infrastructure.Queries
             return await _context.Dishes
                 .AnyAsync(d => d.Name == name);
         }
+
+        public async Task<bool> CategoryExistsAsync(int categoryId)
+        {
+            return await _context.Categories.AnyAsync(c => c.Id == categoryId);
+        }
     }
 }

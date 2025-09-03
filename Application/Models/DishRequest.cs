@@ -4,14 +4,14 @@ namespace Application.Models
 {
     public class DishRequest
     {
-        [Required]
-        [MaxLength(255)]
-        public string Name { get; set; }
+        [Required(ErrorMessage = "El nombre del plato es obligatorio")]
+        [MaxLength(100)]
+        public string Name { get; set; } = default!;
 
         [MaxLength(500)]
         public string? Description { get; set; }
 
-        [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor a 0")]
+        [Range(typeof(decimal), "0.01", "79228162514264337593543950335", ErrorMessage = "El precio debe ser mayor a cero")]
         public decimal Price { get; set; }
 
         [Required]
@@ -19,7 +19,5 @@ namespace Application.Models
 
         [Url]
         public string? Image { get; set; }
-
-        public bool IsActive { get; set; }
     }
 }

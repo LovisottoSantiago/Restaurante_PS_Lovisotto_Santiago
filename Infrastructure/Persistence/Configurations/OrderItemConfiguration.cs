@@ -20,7 +20,7 @@ namespace Infrastructure.Persistence.Configurations
 
             builder.Property(orderItem => orderItem.CreateDate)
                 .IsRequired()
-                .HasDefaultValueSql("GETDATE()");
+                .HasDefaultValueSql("GETUTCDATE()");
 
             builder.HasOne(orderItem => orderItem.DishNavigation)
                 .WithMany(dish => dish.OrderItems)

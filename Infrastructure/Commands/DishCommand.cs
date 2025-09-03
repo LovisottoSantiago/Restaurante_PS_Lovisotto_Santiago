@@ -13,7 +13,7 @@ namespace Infrastructure.Commands
             _context = context;
         }
 
-        public async Task CreateAsync(Dish dish)
+        public async Task InsertAsync(Dish dish)
         {
             await _context.Dishes.AddAsync(dish);
             await _context.SaveChangesAsync();

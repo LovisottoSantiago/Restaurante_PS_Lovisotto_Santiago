@@ -35,11 +35,11 @@ namespace Infrastructure.Persistence.Configurations
 
             builder.Property(dish => dish.CreateDate)
                 .IsRequired()
-                .HasDefaultValueSql("GETDATE()");
+                .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(dish => dish.UpdateDate)
                 .IsRequired()
-                .HasDefaultValueSql("GETDATE()");
+                .HasDefaultValueSql("GETUTCDATE()");
 
             builder.HasOne(dish => dish.CategoryNavigation)
                 .WithMany(category => category.Dishes)

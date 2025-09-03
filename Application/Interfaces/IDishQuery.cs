@@ -7,5 +7,6 @@ namespace Application.Interfaces
         Task<IReadOnlyList<Dish>> GetAllAsync();
         Task<Dish?> GetByIdAsync(Guid id);
         Task<bool> ExistsByNameAsync(string name);
+        Task<bool> CategoryExistsAsync(int categoryId);
     }
 }
