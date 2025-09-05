@@ -30,7 +30,6 @@ namespace Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(dish => dish.ImageUrl)
-                .IsRequired()
                 .HasColumnType("varchar(MAX)");
 
             builder.Property(dish => dish.CreateDate)

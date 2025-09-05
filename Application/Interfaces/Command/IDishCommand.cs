@@ -1,11 +1,10 @@
 ﻿using Domain.Entities;
 
-namespace Application.Interfaces
+namespace Application.Interfaces.Command
 {
     public interface IDishCommand
     {
         Task InsertAsync(Dish dish);
         Task UpdateAsync(Dish dish);
-        Task DeleteAsync(Dish dish);
     }
 }

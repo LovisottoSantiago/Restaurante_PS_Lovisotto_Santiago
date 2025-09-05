@@ -1,6 +1,6 @@
 ﻿namespace Application.Response
 {
-    public class CategoryResponse
+    public class GenericResponse
     {
         public int Id { get; set; }
         public string? Name { get; set; }

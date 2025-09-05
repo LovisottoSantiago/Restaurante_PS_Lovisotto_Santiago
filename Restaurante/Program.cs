@@ -1,4 +1,6 @@
-using Application.Interfaces;
+using Application.Interfaces.Command;
+using Application.Interfaces.Query;
+using Application.Interfaces.Service;
 using Application.UseCases;
 using Infrastructure.Commands;
 using Infrastructure.Persistence;
@@ -10,13 +12,25 @@ using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
 
 // Custom: mis inyecciones
+builder.Services.AddControllers();
+
+
+builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(c =>
 {
+
+    c.MapType<Application.Models.SortDirection>(() => new Microsoft.OpenApi.Models.OpenApiSchema
+    {
+        Type = "string",
+        Enum = new List<Microsoft.OpenApi.Any.IOpenApiAny>
+        {
+            new Microsoft.OpenApi.Any.OpenApiString("asc"),
+            new Microsoft.OpenApi.Any.OpenApiString("desc")
+        }
+    });
     c.EnableAnnotations();
     c.ExampleFilters();
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -31,6 +45,8 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+
 builder.Services.AddSwaggerExamplesFromAssemblyOf<DishRequestExample>();
 
 // Database
@@ -38,6 +54,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
 // Dependency Injection
+builder.Services.AddScoped<ICategoryQuery, CategoryQuery>();
 builder.Services.AddScoped<IDishCommand, DishCommand>();
 builder.Services.AddScoped<IDishQuery, DishQuery>();
 builder.Services.AddScoped<IDishService, DishService>();

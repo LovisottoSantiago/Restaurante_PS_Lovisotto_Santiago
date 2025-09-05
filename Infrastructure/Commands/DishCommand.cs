@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+﻿using Application.Interfaces.Command;
 using Domain.Entities;
 using Infrastructure.Persistence;
 
@@ -21,14 +21,10 @@ namespace Infrastructure.Commands
 
         public async Task UpdateAsync(Dish dish)
         {
+            _context.Entry(dish).Property(d => d.Category).IsModified = true;
             _context.Dishes.Update(dish);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Dish dish)
-        {
-            _context.Dishes.Remove(dish);
-            await _context.SaveChangesAsync();
-        }
     }
 }

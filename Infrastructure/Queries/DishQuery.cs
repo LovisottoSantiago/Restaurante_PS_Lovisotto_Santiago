@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+﻿using Application.Interfaces.Query;
 using Domain.Entities;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +17,7 @@ namespace Infrastructure.Queries
         public async Task<IReadOnlyList<Dish>> GetAllAsync()
         {
             return await _context.Dishes
-                .Include(d => d.CategoryNavigation)
+                .Include(dish => dish.CategoryNavigation)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -25,20 +25,15 @@ namespace Infrastructure.Queries
         public async Task<Dish?> GetByIdAsync(Guid id)
         {
             return await _context.Dishes
-                .Include(d => d.CategoryNavigation)
+                .Include(dish => dish.CategoryNavigation)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(d => d.DishId == id);
+                .FirstOrDefaultAsync(dish => dish.DishId == id);
         }
 
         public async Task<bool> ExistsByNameAsync(string name)
         {
             return await _context.Dishes
-                .AnyAsync(d => d.Name == name);
-        }
-
-        public async Task<bool> CategoryExistsAsync(int categoryId)
-        {
-            return await _context.Categories.AnyAsync(c => c.Id == categoryId);
+                .AnyAsync(dish => dish.Name == name);
         }
     }
 }
