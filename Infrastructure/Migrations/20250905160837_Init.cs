@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -65,8 +65,8 @@ namespace Infrastructure.Migrations
                     Available = table.Column<bool>(type: "bit", nullable: false),
                     Category = table.Column<int>(type: "int", nullable: false),
                     ImageUrl = table.Column<string>(type: "varchar(MAX)", nullable: false),
-                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
                 },
                 constraints: table =>
                 {
@@ -90,8 +90,8 @@ namespace Infrastructure.Migrations
                     OverallStatus = table.Column<int>(type: "int", nullable: false),
                     Notes = table.Column<string>(type: "varchar(MAX)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
                 },
                 constraints: table =>
                 {
@@ -121,7 +121,7 @@ namespace Infrastructure.Migrations
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Notes = table.Column<string>(type: "varchar(MAX)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
                 },
                 constraints: table =>
                 {

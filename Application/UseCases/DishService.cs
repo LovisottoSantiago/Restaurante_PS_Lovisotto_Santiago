@@ -1,9 +1,11 @@
-﻿using Application.Interfaces.Command;
+﻿using Application.Exceptions;
+using Application.Interfaces.Command;
 using Application.Interfaces.Query;
 using Application.Interfaces.Service;
 using Application.Models;
 using Application.Response;
 using Domain.Entities;
+
 namespace Application.UseCases
 {
     public class DishService : IDishService
@@ -22,6 +24,7 @@ namespace Application.UseCases
         public async Task<IReadOnlyList<DishResponse>> GetAllAsync(string? name, int? categoryId, SortDirection? sortByPrice, bool onlyActive)
         {
             var dishes = await _query.GetAllAsync();
+            var errors = new List<string>();
 
             if (!string.IsNullOrWhiteSpace(name))
                 dishes = dishes.Where(dish => dish.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
@@ -39,8 +42,11 @@ namespace Application.UseCases
                 else if (sortByPrice == SortDirection.desc)
                     dishes = dishes.OrderByDescending(d => d.Price).ToList();
                 else
-                    throw new ArgumentException("Parámetros de ordenamiento inválidos");
+                    errors.Add("Parámetros de ordenamiento inválidos");
             }
+
+            if (errors.Any())
+                throw new CustomException(errors);
 
             return dishes.Select(d => new DishResponse
             {
@@ -85,17 +91,22 @@ namespace Application.UseCases
 
         public async Task<DishResponse> CreateAsync(DishRequest request)
         {
+            var errors = new List<string>();
+
             if (string.IsNullOrWhiteSpace(request.Name))
-                throw new ArgumentNullException("El nombre del plato es obligatorio");
+                errors.Add("El nombre del plato es obligatorio");
 
             if (request.Price <= 0)
-                throw new ArgumentOutOfRangeException("El precio debe ser mayor a cero");
-            
+                errors.Add("El precio debe ser mayor a cero");
+
             if (!await _categoryQuery.ExistsAsync(request.Category))
-                throw new ArgumentException("La categoría debe existir");
+                errors.Add("La categoría debe existir");
 
             if (await _query.ExistsByNameAsync(request.Name))
-                throw new InvalidOperationException("Ya existe un plato con ese nombre");
+                errors.Add("Ya existe un plato con ese nombre");
+
+            if (errors.Any())
+                throw new CustomException(errors);
 
             var dish = new Dish
             {
@@ -136,20 +147,25 @@ namespace Application.UseCases
         public async Task<DishResponse> UpdateAsync(Guid id, DishUpdateRequest request)
         {
             var dish = await _query.GetByIdAsync(id);
+            var errors = new List<string>();
+
             if (dish is null)
-                throw new KeyNotFoundException("Plato no encontrado");
+                errors.Add("Plato no encontrado");
 
             if (string.IsNullOrWhiteSpace(request.Name))
-                throw new ArgumentNullException("El nombre del plato es obligatorio");
+                errors.Add("El nombre del plato es obligatorio");
 
             if (request.Price <= 0)
-                throw new ArgumentOutOfRangeException("El precio debe ser mayor a cero");
+                errors.Add("El precio debe ser mayor a cero");
 
             if (!await _categoryQuery.ExistsAsync(request.Category))
-                throw new ArgumentException("La categoría debe existir");
+                errors.Add("La categoría debe existir");
 
-            if (await _query.ExistsByNameAsync(request.Name) && !dish.Name.Equals(request.Name, StringComparison.OrdinalIgnoreCase))
-                throw new InvalidOperationException("Ya existe un plato con ese nombre");
+            if (await _query.ExistsByNameAsync(request.Name))
+                errors.Add("Ya existe un plato con ese nombre");
+
+            if (errors.Any())
+                throw new CustomException(errors);
 
             dish.Name = request.Name;
             dish.Description = request.Description;

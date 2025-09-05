@@ -14,15 +14,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 // Custom: mis inyecciones
-builder.Services.AddControllers();
-
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.SuppressModelStateInvalidFilter = true;
+    });
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSwaggerGen(c =>
+builder.Services.AddSwaggerGen(options =>
 {
 
-    c.MapType<Application.Models.SortDirection>(() => new Microsoft.OpenApi.Models.OpenApiSchema
+    options.MapType<Application.Models.SortDirection>(() => new Microsoft.OpenApi.Models.OpenApiSchema
     {
         Type = "string",
         Enum = new List<Microsoft.OpenApi.Any.IOpenApiAny>
@@ -31,9 +34,9 @@ builder.Services.AddSwaggerGen(c =>
             new Microsoft.OpenApi.Any.OpenApiString("desc")
         }
     });
-    c.EnableAnnotations();
-    c.ExampleFilters();
-    c.SwaggerDoc("v1", new OpenApiInfo
+    options.EnableAnnotations();
+    options.ExampleFilters();
+    options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "RestaurantAPI",
         Version = "1.0",

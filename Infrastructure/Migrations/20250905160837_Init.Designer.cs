@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250902183310_init")]
-    partial class init
+    [Migration("20250905160837_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -174,7 +174,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreateDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -195,7 +195,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("UpdateDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.HasKey("DishId");
 
@@ -218,7 +218,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreateDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<string>("DeliveryTo")
                         .IsRequired()
@@ -241,7 +241,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("UpdateDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.HasKey("OrderId");
 
@@ -263,7 +263,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreateDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<Guid>("Dish")
                         .HasColumnType("uniqueidentifier");

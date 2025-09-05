@@ -171,7 +171,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreateDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -192,7 +192,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("UpdateDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.HasKey("DishId");
 
@@ -215,7 +215,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreateDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<string>("DeliveryTo")
                         .IsRequired()
@@ -238,7 +238,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("UpdateDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.HasKey("OrderId");
 
@@ -260,7 +260,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreateDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<Guid>("Dish")
                         .HasColumnType("uniqueidentifier");
