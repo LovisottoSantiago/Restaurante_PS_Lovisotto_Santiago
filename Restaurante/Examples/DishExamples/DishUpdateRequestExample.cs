@@ -1,7 +1,7 @@
 ﻿using Swashbuckle.AspNetCore.Filters;
 using Application.Models;
 
-namespace Restaurante.Examples
+namespace Restaurante.Examples.DishExamples
 {
     public class DishUpdateRequestExample : IExamplesProvider<DishUpdateRequest>
     {

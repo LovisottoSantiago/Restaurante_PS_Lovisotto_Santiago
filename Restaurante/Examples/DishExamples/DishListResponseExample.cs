@@ -1,7 +1,7 @@
 ﻿using Swashbuckle.AspNetCore.Filters;
 using Application.Response;
 
-namespace Restaurante.Examples
+namespace Restaurante.Examples.DishExamples
 {
     public class DishListResponseExample : IExamplesProvider<IEnumerable<DishResponse>>
     {

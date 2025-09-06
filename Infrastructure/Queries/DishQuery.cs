@@ -35,5 +35,12 @@ namespace Infrastructure.Queries
             return await _context.Dishes
                 .AnyAsync(dish => dish.Name == name);
         }
+
+        public async Task<bool> ExistsByNameAsync(string name, Guid excludeId)
+        {
+            return await _context.Dishes
+                .AnyAsync(dish => dish.Name == name && dish.DishId != excludeId);
+        }
+
     }
 }

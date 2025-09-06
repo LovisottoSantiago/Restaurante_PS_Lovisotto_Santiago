@@ -5,10 +5,8 @@ namespace Application.Models
     public class DishRequest
     {
         [Required]
-        [MaxLength(100)]
-        public string Name { get; set; } = default!;
-
-        [MaxLength(500)]
+        [MaxLength(255)]
+        public string Name { get; set; } 
         public string? Description { get; set; }
 
         [Required]
@@ -16,7 +14,6 @@ namespace Application.Models
         public decimal Price { get; set; }
 
         [Required]
-        [Range(1, int.MaxValue)]
         public int Category { get; set; }
 
         [Url]

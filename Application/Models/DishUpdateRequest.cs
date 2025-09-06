@@ -5,13 +5,12 @@ namespace Application.Models
     public class DishUpdateRequest
     {
         [Required]
-        [MaxLength(100)]
-        public string Name { get; set; } = default!;
-
-        [MaxLength(500)]
+        [MaxLength(255)]
+        public string Name { get; set; } 
         public string? Description { get; set; }
 
         [Required]
+        [Range(0.01, double.MaxValue)]
         public decimal Price { get; set; }
 
         [Required]
