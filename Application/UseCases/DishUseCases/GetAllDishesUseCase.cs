@@ -22,8 +22,6 @@ namespace Application.UseCases.DishUseCases
 
             if (onlyActive)
                 dishes = dishes.Where(dish => dish.Available).ToList();
-            else
-                dishes = dishes.Where(dish => !dish.Available).ToList();
 
             if (categoryId.HasValue)
                 dishes = dishes.Where(dish => dish.Category == categoryId.Value).ToList();

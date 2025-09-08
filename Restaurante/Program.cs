@@ -45,7 +45,7 @@ builder.Services.AddSwaggerGen(options =>
     options.ExampleFilters();
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "RestaurantAPI",
+        Title = "Restaurant API",
         Version = "1.0",
         Description = "API para la gestión de platos en un restaurante",
         Contact = new OpenApiContact
