@@ -266,5 +266,61 @@ namespace MyCustomTests
             (await response.Content.ReadFromJsonAsync<ApiError>())!
                 .Message.Should().Be("Ya existe un plato con ese nombre");
         }
+
+        // ---------- POST EXTRA TEST ----------
+
+        [Fact]
+        public async Task Post_Should_Return_400_When_Missing_Required_Fields()
+        {
+            var request = new DishRequest
+            {
+                Name = "Provoleta Test",
+                Description = "Queso a la parrilla sin price ni category"
+                // Falta Price y Category
+            };
+
+            var response = await _client.PostAsJsonAsync("/api/v1/Dish", request);
+
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var error = await response.Content.ReadFromJsonAsync<ApiError>();
+            error!.Message.Should().Be("El precio debe ser mayor a cero");
+        }
+
+
+        // ---------- GET EXTRA TESTS ----------
+
+        [Fact]
+        public async Task Get_Should_Return_200_Sorted_By_Price_Desc()
+        {
+            var response = await _client.GetAsync("/api/v1/Dish?sortByPrice=desc");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var dishes = await response.Content.ReadFromJsonAsync<List<DishResponse>>();
+            dishes!.Should().BeInDescendingOrder(d => d.Price);
+        }
+
+        [Fact]
+        public async Task Get_Should_Return_200_Only_Active_Dishes()
+        {
+            // Llamo al endpoint con filtro de activos
+            var response = await _client.GetAsync("/api/v1/Dish?onlyActive=true");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var dishes = await response.Content.ReadFromJsonAsync<List<DishResponse>>();
+            dishes!.Should().OnlyContain(d => d.IsActive);
+        }
+
+        [Fact]
+        public async Task Get_Should_Return_200_All_Dishes_When_OnlyActive_False()
+        {
+            var response = await _client.GetAsync("/api/v1/Dish?onlyActive=false");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var dishes = await response.Content.ReadFromJsonAsync<List<DishResponse>>();
+            dishes.Should().NotBeNull();
+            // En este caso no filtro, debería traer todos (activos e inactivos)
+        }
+
     }
 }
