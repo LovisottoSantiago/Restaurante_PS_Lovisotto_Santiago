@@ -25,6 +25,10 @@ namespace Infrastructure.Commands
             _context.Dishes.Update(dish);
             await _context.SaveChangesAsync();
         }
-
+        public async Task SoftDeleteAsync(Dish dish)
+        {
+            _context.Dishes.Update(dish);
+            await _context.SaveChangesAsync();
+        }
     }
 }

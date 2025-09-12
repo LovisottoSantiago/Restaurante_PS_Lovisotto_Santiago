@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces.Query;
+using Domain.Entities;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,11 +13,18 @@ namespace Infrastructure.Queries
         {
             _context = context;
         }
+        public async Task<IReadOnlyList<Category>> GetAllAsync()
+        {
+            return await _context.Categories
+                .AsNoTracking()
+                .ToListAsync();
+        }
 
         public async Task<bool> ExistsAsync(int categoryId)
         {
             return await _context.Categories.AnyAsync(c => c.Id == categoryId);
         }
+
     }
 
 }

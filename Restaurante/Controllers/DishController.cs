@@ -54,7 +54,15 @@ namespace Infrastructure.Controllers
 
         // GET /api/v1/Dish/{id} (oculto en Swagger)
         [HttpGet("{id}")]
-        [ApiExplorerSettings(IgnoreApi = true)]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [SwaggerOperation(Summary = "Obtener plato por ID", Description = "Obtiene los detalles completos de un plato específico.")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Plato encontrado exitosamente", typeof(DishResponse))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(DishResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Formato de ID inválido", typeof(ApiError))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ApiErrorGetByIdBadRequestExamples))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Plato no encontrado", typeof(ApiError))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ApiErrorNotFoundExample))]
         public async Task<IActionResult> GetById(Guid id)
         {
             var dish = await _service.GetByIdAsync(id);
@@ -79,6 +87,20 @@ namespace Infrastructure.Controllers
         {
             var updated = await _service.UpdateAsync(id, request);
             return Ok(updated); // 200
+        }
+
+        // DELETE api/v1/dish/{id}
+        [HttpDelete("{id:guid}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [SwaggerOperation(Summary = "Eliminar plato", Description = "Elimina un plato del menú del restaurante.")]
+        [ProducesResponseType(typeof(DishResponse), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(409)]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var dish = await _service.DeleteAsync(id);
+            return Ok(dish);
         }
     }
 }

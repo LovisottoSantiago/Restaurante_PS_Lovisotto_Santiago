@@ -9,5 +9,6 @@ namespace Application.Interfaces.Service
         Task<DishResponse?> GetByIdAsync(Guid id);
         Task<DishResponse> CreateAsync(DishRequest request);
         Task<DishResponse> UpdateAsync(Guid id, DishUpdateRequest request);
+        Task<DishResponse> DeleteAsync(Guid id);
     }
 }

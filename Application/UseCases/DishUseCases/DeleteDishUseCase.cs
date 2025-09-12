@@ -1,27 +1,33 @@
 ﻿using Application.Exceptions;
+using Application.Interfaces.Command;
 using Application.Interfaces.Query;
 using Application.Response;
 
 namespace Application.UseCases.DishUseCases
 {
-    public class GetDishByIdUseCase
+    public class DeleteDishUseCase
     {
         private readonly IDishQuery _query;
+        private readonly IDishCommand _command;
 
-        public GetDishByIdUseCase(IDishQuery query)
+        public DeleteDishUseCase(IDishQuery query, IDishCommand command)
         {
             _query = query;
+            _command = command;
         }
-
-        public async Task<DishResponse?> ExecuteAsync(Guid id)
+        public async Task<DishResponse> ExecuteAsync(Guid id)
         {
-            if (id == Guid.Empty)
-                throw new BadRequestException400("Formato de ID inválido");
-
             var dish = await _query.GetByIdAsync(id);
 
-            if (dish == null)
+            if (dish is null)
                 throw new NotFoundException404("Plato no encontrado");
+
+            // Acá iria la logica de orden
+                //throw new ConflictException409("No se puede eliminar el plato porque está incluido en órdenes activas");
+
+            dish.Available = false;
+            dish.UpdateDate = DateTime.UtcNow;
+            await _command.SoftDeleteAsync(dish);
 
             return new DishResponse
             {
