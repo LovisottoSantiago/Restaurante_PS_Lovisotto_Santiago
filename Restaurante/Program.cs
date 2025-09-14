@@ -1,17 +1,8 @@
-using Application.Interfaces.Command;
-using Application.Interfaces.Query;
-using Application.Interfaces.Service;
-using Application.Services;
-using Application.UseCases.CategoryUseCases;
-using Application.UseCases.DeliveryTypeUseCases;
-using Application.UseCases.DishUseCases;
-using Application.UseCases.StatusUseCases;
-using Infrastructure.Commands;
 using Infrastructure.Filters;
 using Infrastructure.Persistence;
-using Infrastructure.Queries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Restaurante.DependencyInjection;
 using Restaurante.Examples.DishExamples;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -75,31 +66,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
 // Dependency Injection //
-// Application Services
-builder.Services.AddScoped<IDishService, DishService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<IDeliveryTypeService, DeliveryTypeService>();
-builder.Services.AddScoped<IStatusService, StatusService>();
-
-// Queries & Commands
-builder.Services.AddScoped<IDishQuery, DishQuery>();
-builder.Services.AddScoped<IDishCommand, DishCommand>();
-builder.Services.AddScoped<ICategoryQuery, CategoryQuery>();
-builder.Services.AddScoped<IDeliveryTypeQuery, DeliveryTypeQuery>();
-builder.Services.AddScoped<IStatusQuery, StatusQuery>();
-
-// Use Cases
-builder.Services.AddScoped<GetAllDishesUseCase>();
-builder.Services.AddScoped<GetDishByIdUseCase>();
-builder.Services.AddScoped<CreateDishUseCase>();
-builder.Services.AddScoped<UpdateDishUseCase>();
-builder.Services.AddScoped<DeleteDishUseCase>();
-
-builder.Services.AddScoped<GetAllCategoriesUseCase>();
-
-builder.Services.AddScoped<GetAllDeliveryTypesUseCase>();
-
-builder.Services.AddScoped<GetAllStatusesUseCase>();
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 

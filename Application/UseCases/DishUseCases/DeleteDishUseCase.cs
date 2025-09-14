@@ -9,11 +9,12 @@ namespace Application.UseCases.DishUseCases
     {
         private readonly IDishQuery _query;
         private readonly IDishCommand _command;
-
-        public DeleteDishUseCase(IDishQuery query, IDishCommand command)
+        private readonly IOrderQuery _orderQuery;
+        public DeleteDishUseCase(IDishQuery query, IDishCommand command, IOrderQuery orderQuery) 
         {
             _query = query;
             _command = command;
+            _orderQuery = orderQuery;
         }
         public async Task<DishResponse> ExecuteAsync(Guid id)
         {
@@ -22,9 +23,12 @@ namespace Application.UseCases.DishUseCases
             if (dish is null)
                 throw new NotFoundException404("Plato no encontrado");
 
-            // Acá iria la logica de orden
-                //throw new ConflictException409("No se puede eliminar el plato porque está incluido en órdenes activas");
+            // Validar si el plato está en órdenes activas
+            var hasActiveOrders = await _orderQuery.ExistsActiveOrderWithDishAsync(dish.DishId);
+            if (hasActiveOrders)
+                throw new ConflictException409("No se puede eliminar el plato porque está incluido en órdenes activas");
 
+            // Soft delete
             dish.Available = false;
             dish.UpdateDate = DateTime.UtcNow;
             await _command.SoftDeleteAsync(dish);

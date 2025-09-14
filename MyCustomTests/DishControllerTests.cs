@@ -267,6 +267,88 @@ namespace MyCustomTests
                 .Message.Should().Be("Ya existe un plato con ese nombre");
         }
 
+        // ---------- 16-18) DELETE TESTS ----------
+
+        [Fact]
+        public async Task Delete_Should_Return_200_When_Dish_Deleted()
+        {
+            // Creo un plato primero
+            var request = new DishRequest
+            {
+                Name = "Pizza Delete Test",
+                Description = "Pizza creada para testear el delete",
+                Price = 1200m,
+                Category = 6,
+                Image = "https://restaurant.com/images/pizza-delete.jpg"
+            };
+
+            var postResponse = await _client.PostAsJsonAsync("/api/v1/Dish", request);
+            postResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+
+            var created = await postResponse.Content.ReadFromJsonAsync<DishResponse>();
+
+            // DELETE
+            var response = await _client.DeleteAsync($"/api/v1/Dish/{created!.Id}");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var deleted = await response.Content.ReadFromJsonAsync<DishResponse>();
+            deleted!.IsActive.Should().BeFalse(); // soft delete
+        }
+
+
+        [Fact]
+        public async Task Delete_Should_Return_404_When_Dish_Not_Found()
+        {
+            var response = await _client.DeleteAsync($"/api/v1/Dish/{Guid.NewGuid()}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+            var error = await response.Content.ReadFromJsonAsync<ApiError>();
+            error!.Message.Should().Be("Plato no encontrado");
+        }
+
+
+        [Fact]
+        public async Task Delete_Should_Return_409_When_Dish_In_Active_Order()
+        {
+            // 1. Crear un plato
+            var dishRequest = new DishRequest
+            {
+                Name = "Pizza En Orden Activa",
+                Description = "Pizza que será usada en una orden activa",
+                Price = 1500m,
+                Category = 6,
+                Image = "https://restaurant.com/images/pizza-en-orden.jpg"
+            };
+
+            var dishResponse = await _client.PostAsJsonAsync("/api/v1/Dish", dishRequest);
+            dishResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+
+            var dish = await dishResponse.Content.ReadFromJsonAsync<DishResponse>();
+
+            // 2. Crear una orden activa con ese plato
+            var orderRequest = new OrderRequest
+            {
+                Items = new List<Item>
+        {
+            new Item { Id = dish!.Id, Quantity = 1, Notes = "Test item en orden activa" }
+        },
+                Delivery = new Delivery { Id = 1, To = "Av. Corrientes 1234" },
+                Notes = "Orden activa para test delete"
+            };
+
+            var orderResponse = await _client.PostAsJsonAsync("/api/v1/Order", orderRequest);
+            orderResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+
+            // 3. Intentar eliminar el plato
+            var deleteResponse = await _client.DeleteAsync($"/api/v1/Dish/{dish.Id}");
+            deleteResponse.StatusCode.Should().Be(HttpStatusCode.Conflict);
+
+            var error = await deleteResponse.Content.ReadFromJsonAsync<ApiError>();
+            error!.Message.Should().Be("No se puede eliminar el plato porque está incluido en órdenes activas");
+        }
+
+
         // ---------- POST EXTRA TEST ----------
 
         [Fact]

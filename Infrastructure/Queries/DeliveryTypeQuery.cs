@@ -20,5 +20,10 @@ namespace Infrastructure.Queries
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        public async Task<bool> ExistsAsync(int deliveryTypeId)
+        {
+            return await _context.DeliveryTypes.AnyAsync(d => d.Id == deliveryTypeId);
+        }
     }
 }

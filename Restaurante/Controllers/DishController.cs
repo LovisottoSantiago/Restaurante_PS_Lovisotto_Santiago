@@ -52,7 +52,7 @@ namespace Infrastructure.Controllers
             return Ok(dishes); // 200
         }
 
-        // GET /api/v1/Dish/{id} (oculto en Swagger)
+        // GET /api/v1/Dish/{id}
         [HttpGet("{id}")]
         [Consumes("application/json")]
         [Produces("application/json")]
