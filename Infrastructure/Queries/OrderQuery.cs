@@ -43,8 +43,7 @@ namespace Infrastructure.Queries
         {
             return await _context.OrderItems
                 .AnyAsync(oi => oi.Dish == dishId &&
-                                oi.OrderNavigation.OverallStatus != 3 && // Cancelada
-                                oi.OrderNavigation.OverallStatus != 4); // Finalizada
+                                oi.OrderNavigation.OverallStatus != 5);// cualquier estado distinto de Closed es activo
         }
 
     }

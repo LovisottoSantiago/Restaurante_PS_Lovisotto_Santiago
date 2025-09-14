@@ -330,9 +330,9 @@ namespace MyCustomTests
             var orderRequest = new OrderRequest
             {
                 Items = new List<Item>
-        {
-            new Item { Id = dish!.Id, Quantity = 1, Notes = "Test item en orden activa" }
-        },
+                {
+                    new Item { Id = dish!.Id, Quantity = 1, Notes = "Test item en orden activa" }
+                },
                 Delivery = new Delivery { Id = 1, To = "Av. Corrientes 1234" },
                 Notes = "Orden activa para test delete"
             };
