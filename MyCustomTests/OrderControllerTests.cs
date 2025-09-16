@@ -43,9 +43,9 @@ namespace MyCustomTests
 
             var request = new OrderRequest
             {
-                Items = new List<Item>
+                Items = new List<Items>
                 {
-                    new Item { Id = dish.Id, Quantity = 2, Notes = "Sin sal" }
+                    new Items { Id = dish.Id, Quantity = 2, Notes = "Sin sal" }
                 },
                 Delivery = new Delivery { Id = 1, To = "Av. Corrientes 1234" },
                 Notes = "Timbre: 5B"
@@ -69,9 +69,9 @@ namespace MyCustomTests
         {
             var request = new OrderRequest
             {
-                Items = new List<Item>
+                Items = new List<Items>
                 {
-                    new Item { Id = Guid.NewGuid(), Quantity = 1 }
+                    new Items { Id = Guid.NewGuid(), Quantity = 1 }
                 },
                 Delivery = new Delivery { Id = 1, To = "Av. Corrientes 1234" }
             };
@@ -188,9 +188,9 @@ namespace MyCustomTests
             // Crear una orden primero
             var request = new OrderRequest
             {
-                Items = new List<Item>
+                Items = new List<Items>
                 {
-                    new Item { Id = dish.Id, Quantity = 1, Notes = "Test Item" }
+                    new Items { Id = dish.Id, Quantity = 1, Notes = "Test Item" }
                 },
                 Delivery = new Delivery { Id = 1, To = "Av. Corrientes 1234" },
                 Notes = "Orden para GET ALL"
@@ -219,9 +219,9 @@ namespace MyCustomTests
 
             var request = new OrderRequest
             {
-                Items = new List<Item>
+                Items = new List<Items>
                 {
-                    new Item { Id = dish.Id, Quantity = 1 }
+                    new Items { Id = dish.Id, Quantity = 1 }
                 },
                 Delivery = new Delivery { Id = 1, To = "Filtro de estado" }
             };
@@ -265,9 +265,9 @@ namespace MyCustomTests
 
             var request = new OrderRequest
             {
-                Items = new List<Item>
+                Items = new List<Items>
                 {
-                    new Item { Id = dish.Id, Quantity = 2, Notes = "Test Item" }
+                    new Items { Id = dish.Id, Quantity = 2, Notes = "Test Item" }
                 },
                 Delivery = new Delivery { Id = 1, To = "Av. Corrientes 1234" },
                 Notes = "Orden para GET BY ID"

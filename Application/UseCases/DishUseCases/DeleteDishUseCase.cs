@@ -23,15 +23,11 @@ namespace Application.UseCases.DishUseCases
             if (dish is null)
                 throw new NotFoundException404("Plato no encontrado");
 
-            // Validar si el plato está en órdenes activas
-            var hasActiveOrders = await _orderQuery.ExistsActiveOrderWithDishAsync(dish.DishId);
-            if (hasActiveOrders)
+            var existsOrder = await _orderQuery.ExistsOrderWithDishAsync(dish.DishId);
+            if (existsOrder)
                 throw new ConflictException409("No se puede eliminar el plato porque está incluido en órdenes activas");
 
-            // Soft delete
-            dish.Available = false;
-            dish.UpdateDate = DateTime.UtcNow;
-            await _command.SoftDeleteAsync(dish);
+            await _command.DeleteAsync(dish);
 
             return new DishResponse
             {

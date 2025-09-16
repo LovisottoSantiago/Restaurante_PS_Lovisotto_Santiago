@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Query;
 using Domain.Entities;
+using Domain.Enums;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,11 +40,10 @@ namespace Infrastructure.Queries
                 .AsNoTracking()
                 .FirstOrDefaultAsync(order => order.OrderId == orderId);
         }
-        public async Task<bool> ExistsActiveOrderWithDishAsync(Guid dishId)
+        public async Task<bool> ExistsOrderWithDishAsync(Guid dishId)
         {
-            return await _context.OrderItems
-                .AnyAsync(oi => oi.Dish == dishId &&
-                                oi.OrderNavigation.OverallStatus != 5);// cualquier estado distinto de Closed es activo
+            return await _context.Orders
+                .AnyAsync(o => o.OrderItems.Any(oi => oi.Dish == dishId));
         }
 
     }

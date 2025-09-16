@@ -6,6 +6,6 @@ namespace Application.Interfaces.Query
     {
         Task<IReadOnlyList<Order>> GetAllAsync();
         Task<Order?> GetByIdAsync(long orderId);
-        Task<bool> ExistsActiveOrderWithDishAsync(Guid dishId);
+        Task<bool> ExistsOrderWithDishAsync(Guid dishId);
     }
 }

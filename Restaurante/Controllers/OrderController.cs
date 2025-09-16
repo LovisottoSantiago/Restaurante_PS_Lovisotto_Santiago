@@ -4,6 +4,7 @@ using Application.Response;
 using Infrastructure.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Restaurante.Controllers
 {
@@ -48,8 +49,7 @@ namespace Restaurante.Controllers
         // GET /api/v1/Order/{id}
         [HttpGet("{id:long}")]
         [Produces("application/json")]
-        [SwaggerOperation(Summary = "Obtener orden por ID",
-            Description = "Devuelve el detalle de una orden específica por su número.")]
+        [SwaggerOperation(Summary = "Obtener orden por ID", Description = "Devuelve el detalle de una orden específica por su número.")]
         [ProducesResponseType(typeof(OrderDetailsResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(long id)
@@ -57,5 +57,21 @@ namespace Restaurante.Controllers
             var order = await _service.GetByIdAsync(id);
             return Ok(order);
         }
+
+        // PATCH /api/v1/Order/{id}
+        [HttpPatch("{id:long}")]
+        [Produces("application/json")]
+        [SwaggerOperation(Summary = "Actualizar orden existente", Description = "Actualiza los items de una orden existente.")]
+        [SwaggerRequestExample(typeof(OrderUpdateRequest), typeof(Restaurante.Examples.OrderExamples.OrderUpdateRequestExample))]
+        [ProducesResponseType(typeof(OrderUpdateResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Update(long id, [FromBody] OrderUpdateRequest request)
+        {
+            var response = await _service.UpdateAsync(id, request);
+            return Ok(response);
+        }
+
+
     }
 }

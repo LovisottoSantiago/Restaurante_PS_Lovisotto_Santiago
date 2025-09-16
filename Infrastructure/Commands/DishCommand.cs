@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces.Command;
 using Domain.Entities;
 using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Commands
 {
@@ -25,9 +26,9 @@ namespace Infrastructure.Commands
             _context.Dishes.Update(dish);
             await _context.SaveChangesAsync();
         }
-        public async Task SoftDeleteAsync(Dish dish)
+        public async Task DeleteAsync(Dish dish)
         {
-            _context.Dishes.Update(dish);
+            _context.Dishes.Remove(dish);
             await _context.SaveChangesAsync();
         }
     }

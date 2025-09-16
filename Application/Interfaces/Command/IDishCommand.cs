@@ -6,6 +6,6 @@ namespace Application.Interfaces.Command
     {
         Task InsertAsync(Dish dish);
         Task UpdateAsync(Dish dish);
-        Task SoftDeleteAsync(Dish dish);
+        Task DeleteAsync(Dish dish);
     }
 }

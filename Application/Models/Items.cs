@@ -2,7 +2,7 @@
 
 namespace Application.Models
 {
-    public class Item
+    public class Items
     {
         [Required]
         public Guid Id { get; set; }

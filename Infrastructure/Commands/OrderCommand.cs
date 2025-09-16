@@ -19,5 +19,13 @@ namespace Infrastructure.Commands
             await _context.SaveChangesAsync();
             return order;
         }
+
+        public async Task<Order> UpdateAsync(Order order)
+        {
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
+            return order;
+        }
+
     }
 }

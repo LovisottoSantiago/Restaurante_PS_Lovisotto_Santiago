@@ -8,5 +8,6 @@ namespace Application.Interfaces.Service
         Task<IReadOnlyList<OrderDetailsResponse>> GetAllAsync(DateTime? from, DateTime? to, int? status);
         Task<OrderDetailsResponse?> GetByIdAsync(long id);
         Task<OrderCreateResponse> CreateAsync(OrderRequest request);
+        Task<OrderUpdateResponse> UpdateAsync(long id, OrderUpdateRequest request);
     }
 }

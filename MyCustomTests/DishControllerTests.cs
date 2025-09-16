@@ -291,8 +291,9 @@ namespace MyCustomTests
             var response = await _client.DeleteAsync($"/api/v1/Dish/{created!.Id}");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var deleted = await response.Content.ReadFromJsonAsync<DishResponse>();
-            deleted!.IsActive.Should().BeFalse(); // soft delete
+            // Verifico que ya no esté en la DB consultando el endpoint GET
+            var check = await _client.GetAsync($"/api/v1/Dish/{created.Id}");
+            check.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
 
@@ -329,9 +330,9 @@ namespace MyCustomTests
             // 2. Crear una orden activa con ese plato
             var orderRequest = new OrderRequest
             {
-                Items = new List<Item>
+                Items = new List<Items>
                 {
-                    new Item { Id = dish!.Id, Quantity = 1, Notes = "Test item en orden activa" }
+                    new Items { Id = dish!.Id, Quantity = 1, Notes = "Test item en orden activa" }
                 },
                 Delivery = new Delivery { Id = 1, To = "Av. Corrientes 1234" },
                 Notes = "Orden activa para test delete"
