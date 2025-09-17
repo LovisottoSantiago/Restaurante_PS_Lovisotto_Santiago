@@ -11,13 +11,15 @@ namespace Application.Services
         private readonly CreateOrderUseCase _create;
         private readonly GetOrderByIdUseCase _getById;
         private readonly UpdateOrderUseCase _update;
+        private readonly UpdateOrderItemUseCase _updateItem;
 
-        public OrderService(GetAllOrdersUseCase getAll, GetOrderByIdUseCase getById, CreateOrderUseCase create, UpdateOrderUseCase update)
+        public OrderService(GetAllOrdersUseCase getAll, GetOrderByIdUseCase getById, CreateOrderUseCase create, UpdateOrderUseCase update, UpdateOrderItemUseCase updateItem)
         {
             _getAll = getAll;
             _getById = getById;
             _create = create;
             _update = update;
+            _updateItem = updateItem;
         }
 
         public Task<IReadOnlyList<OrderDetailsResponse>> GetAllAsync(DateTime? from, DateTime? to, int? status)
@@ -37,6 +39,11 @@ namespace Application.Services
         public Task<OrderUpdateResponse> UpdateAsync(long id, OrderUpdateRequest request)
         {
             return _update.ExecuteAsync(id, request);
+        }
+
+        public Task<OrderUpdateResponse> UpdateItemAsync(long orderId, long itemId, OrderItemUpdateRequest request)
+        {
+            return _updateItem.ExecuteAsync(orderId, itemId, request); 
         }
     }
 }

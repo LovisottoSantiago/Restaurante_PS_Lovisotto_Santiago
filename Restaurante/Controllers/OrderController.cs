@@ -58,8 +58,8 @@ namespace Restaurante.Controllers
             return Ok(order);
         }
 
-        // PATCH /api/v1/Order/{id}
-        [HttpPatch("{id:long}")]
+        // PUT /api/v1/Order/{id}
+        [HttpPut("{id:long}")]
         [Produces("application/json")]
         [SwaggerOperation(Summary = "Actualizar orden existente", Description = "Actualiza los items de una orden existente.")]
         [SwaggerRequestExample(typeof(OrderUpdateRequest), typeof(Restaurante.Examples.OrderExamples.OrderUpdateRequestExample))]
@@ -70,6 +70,21 @@ namespace Restaurante.Controllers
         {
             var response = await _service.UpdateAsync(id, request);
             return Ok(response);
+        }
+
+
+        // PATCH /api/v1/Order/{id}/item/{itemId}
+        [HttpPatch("{id:long}/item/{itemId:long}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [SwaggerOperation(Summary = "Actualizar estado de item individual", Description = "Actualiza el estado de un item específico dentro de una orden.")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Estado del item actualizado exitosamente", typeof(OrderUpdateResponse))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Estado inválido o transición no permitida", typeof(ApiError))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Orden o item no encontrado", typeof(ApiError))]
+        public async Task<IActionResult> UpdateItem([FromRoute] long id, [FromRoute] long itemId, [FromBody] OrderItemUpdateRequest request)
+        {
+            var result = await _service.UpdateItemAsync(id, itemId, request);
+            return Ok(result);
         }
 
 

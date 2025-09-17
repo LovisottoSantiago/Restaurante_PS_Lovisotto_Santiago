@@ -24,6 +24,7 @@ namespace Restaurante.DependencyInjection
             services.AddScoped<IStatusQuery, StatusQuery>();
             services.AddScoped<IOrderCommand, OrderCommand>();
             services.AddScoped<IOrderQuery, OrderQuery>();
+            services.AddScoped<IOrderItemCommand, OrderItemCommand>();
 
             return services;
         }

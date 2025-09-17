@@ -27,5 +27,15 @@ namespace Infrastructure.Commands
             return order;
         }
 
+        public async Task UpdateStatusAsync(long orderId, int overallStatus, DateTime updateDate)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null) return;
+
+            order.OverallStatus = overallStatus;
+            order.UpdateDate = updateDate;
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

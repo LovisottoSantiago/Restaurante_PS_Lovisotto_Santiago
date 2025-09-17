@@ -35,6 +35,7 @@ namespace Restaurante.DependencyInjection
             services.AddScoped<GetAllOrdersUseCase>();
             services.AddScoped<GetOrderByIdUseCase>();
             services.AddScoped<UpdateOrderUseCase>();
+            services.AddScoped<UpdateOrderItemUseCase>();
 
             return services;
         }

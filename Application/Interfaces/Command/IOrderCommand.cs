@@ -6,5 +6,6 @@ namespace Application.Interfaces.Command
     {
         Task<Order> InsertAsync(Order order);
         Task<Order> UpdateAsync(Order order);
+        Task UpdateStatusAsync(long orderId, int overallStatus, DateTime updateDate);
     }
 }
