@@ -4,6 +4,7 @@ using Application.Interfaces.Query;
 using Application.Models;
 using Application.Response;
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Application.UseCases.OrderUseCases
 {
@@ -50,7 +51,7 @@ namespace Application.UseCases.OrderUseCases
                     Dish = item.Id,
                     Quantity = item.Quantity,
                     Notes = item.Notes,
-                    Status = 1, // Pendiente
+                    Status = (int)OrderStatus.Pending,
                     CreateDate = DateTime.UtcNow
                 });
             }

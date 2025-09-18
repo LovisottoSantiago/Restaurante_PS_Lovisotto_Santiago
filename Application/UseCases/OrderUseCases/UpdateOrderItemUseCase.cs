@@ -27,14 +27,14 @@ namespace Application.UseCases.OrderUseCases
         {           
             var order = await _query.GetByIdAsync(orderId);
             if (order == null)
-                throw new NotFoundException404("La orden no existe");
+                throw new NotFoundException404("Orden no encontrada");
 
             if (order.OverallStatus == (int)OrderStatus.Closed)
                 throw new BadRequestException400("No se puede modificar una orden cerrada");
 
             var updatedItem = await _itemCommand.UpdateStatusAsync(orderId, itemId, request.Status);
             if (updatedItem == null)
-                throw new NotFoundException404("El item no existe en la orden");
+                throw new NotFoundException404("Item no encontrado en la orden");
 
             order = await _query.GetByIdAsync(orderId);
 

@@ -226,7 +226,7 @@ namespace MyCustomTests
                 Delivery = new Delivery { Id = 1, To = "Filtro de estado" }
             };
 
-            var postResponse = await _client.PostAsJsonAsync("/api/v1/Order", request);           
+            var postResponse = await _client.PostAsJsonAsync("/api/v1/Order", request);
 
             var from = DateTime.UtcNow.AddMinutes(-5).ToString("yyyy-MM-ddTHH:mm:ss");
             var to = DateTime.UtcNow.AddMinutes(5).ToString("yyyy-MM-ddTHH:mm:ss");
@@ -301,6 +301,75 @@ namespace MyCustomTests
             var error = await response.Content.ReadFromJsonAsync<ApiError>();
             error!.Message.Should().Be("Orden no encontrada");
         }
+
+        // ---------- 12) 400 ITEMS NULL ----------
+        [Fact]
+        public async Task Post_Should_Return_400_When_Items_Are_Null()
+        {
+            var payload = new
+            {
+                items = (object?)null,
+                delivery = new { id = 1, to = "Av. Corrientes 1234" }
+            };
+
+            var response = await _client.PostAsJsonAsync("/api/v1/Order", payload);
+
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var error = await response.Content.ReadFromJsonAsync<ApiError>();
+            error!.Message.Should().Be("El plato especificado no existe o no está disponible");
+        }
+
+        // ---------- 13) 400 ITEMS EMPTY ----------
+        [Fact]
+        public async Task Post_Should_Return_400_When_Items_Are_Empty()
+        {
+            var payload = new
+            {
+                items = new object[] { },
+                delivery = new { id = 1, to = "Av. Corrientes 1234" }
+            };
+
+            var response = await _client.PostAsJsonAsync("/api/v1/Order", payload);
+
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var error = await response.Content.ReadFromJsonAsync<ApiError>();
+            error!.Message.Should().Be("El plato especificado no existe o no está disponible");
+        }
+
+
+        // ---------- 15) 200 GET WITH ONLY STATUS ----------
+        [Fact]
+        public async Task Get_Should_Return_200_When_Filtering_Only_By_Status()
+        {
+            var dish = await CreateTestDish();
+
+            var request = new OrderRequest
+            {
+                Items = new List<Items> { new Items { Id = dish.Id, Quantity = 1 } },
+                Delivery = new Delivery { Id = 1, To = "Only status test" }
+            };
+
+            await _client.PostAsJsonAsync("/api/v1/Order", request);
+
+            var response = await _client.GetAsync("/api/v1/Order?status=1");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var orders = await response.Content.ReadFromJsonAsync<List<OrderDetailsResponse>>();
+            orders.Should().NotBeNull();
+            orders!.All(o => o.Status.Id == 1).Should().BeTrue();
+        }
+
+
+        // ---------- 17) 404 GET BY ID NON NUMERIC ----------
+        [Fact]
+        public async Task GetById_Should_Return_404_When_Id_Is_Not_Number()
+        {
+            var response = await _client.GetAsync("/api/v1/Order/abc");
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+
+
 
     }
 }

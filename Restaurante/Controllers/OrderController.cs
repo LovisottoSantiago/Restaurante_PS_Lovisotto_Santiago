@@ -10,7 +10,6 @@ namespace Restaurante.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    [ServiceFilter(typeof(OrderItemValidationFilter))]
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _service;
@@ -22,6 +21,7 @@ namespace Restaurante.Controllers
 
         // POST /api/v1/Order
         [HttpPost]
+        [ServiceFilter(typeof(OrderItemValidationFilter))]
         [Consumes("application/json")]
         [Produces("application/json")]
         [SwaggerOperation(Summary = "Crear nueva orden", Description = "Crea una nueva orden con los platos solicitados por el cliente.")]
