@@ -52,10 +52,11 @@ builder.Services.AddSwaggerGen(options =>
 
 
 builder.Services.AddSwaggerExamplesFromAssemblyOf<ApiErrorConflictExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<ApiErrorGetBadRequestExamples>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<ApiErrorGetBadRequestExample>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<ApiErrorDeleteConflictExample>();
 builder.Services.AddSwaggerExamplesFromAssemblyOf<ApiErrorNotFoundExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<ApiErrorPostBadRequestExamples>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<ApiErrorPutBadRequestExamples>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<ApiErrorPostBadRequestExample>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<ApiErrorPutBadRequestExample>();
 builder.Services.AddSwaggerExamplesFromAssemblyOf<DishListResponseExample>();
 builder.Services.AddSwaggerExamplesFromAssemblyOf<DishRequestExample>();
 builder.Services.AddSwaggerExamplesFromAssemblyOf<DishResponseExample>();

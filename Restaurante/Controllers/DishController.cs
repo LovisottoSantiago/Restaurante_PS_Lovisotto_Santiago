@@ -27,7 +27,7 @@ namespace Infrastructure.Controllers
         [SwaggerResponse(StatusCodes.Status201Created, "Plato creado exitosamente", typeof(DishResponse))]
         [SwaggerResponseExample(StatusCodes.Status201Created, typeof(DishResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Datos de entrada inválidos", typeof(ApiError))]
-        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ApiErrorPostBadRequestExamples))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ApiErrorPostBadRequestExample))]
         [SwaggerResponse(StatusCodes.Status409Conflict, "Ya existe un plato con el mismo nombre", typeof(ApiError))]
         [SwaggerResponseExample(StatusCodes.Status409Conflict, typeof(ApiErrorConflictExample))]
         [SwaggerRequestExample(typeof(DishRequest), typeof(DishRequestExample))]
@@ -45,7 +45,7 @@ namespace Infrastructure.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Lista de platos obtenida exitosamente", typeof(IEnumerable<DishResponse>))]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(DishListResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Parámetros de búsqueda inválidos", typeof(ApiError))]
-        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ApiErrorGetBadRequestExamples))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ApiErrorGetBadRequestExample))]
         public async Task<IActionResult> GetAll([FromQuery] string? name, [FromQuery] int? category, [FromQuery] SortDirection? sortByPrice, [FromQuery] bool onlyActive = true)
         {
             var dishes = await _service.GetAllAsync(name, category, sortByPrice, onlyActive);
@@ -60,7 +60,7 @@ namespace Infrastructure.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Plato encontrado exitosamente", typeof(DishResponse))]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(DishResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Formato de ID inválido", typeof(ApiError))]
-        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ApiErrorGetByIdBadRequestExamples))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ApiErrorGetByIdBadRequestExample))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Plato no encontrado", typeof(ApiError))]
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ApiErrorNotFoundExample))]
         public async Task<IActionResult> GetById(Guid id)
@@ -77,7 +77,7 @@ namespace Infrastructure.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Plato actualizado exitosamente", typeof(DishResponse))]
         [SwaggerResponseExample(StatusCodes.Status200OK, typeof(DishResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Datos de entrada inválidos", typeof(ApiError))]
-        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ApiErrorPutBadRequestExamples))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ApiErrorPutBadRequestExample))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Plato no encontrado", typeof(ApiError))]
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ApiErrorNotFoundExample))]
         [SwaggerResponse(StatusCodes.Status409Conflict, "Conflicto - nombre duplicado", typeof(ApiError))]
@@ -94,9 +94,12 @@ namespace Infrastructure.Controllers
         [Consumes("application/json")]
         [Produces("application/json")]
         [SwaggerOperation(Summary = "Eliminar plato", Description = "Elimina un plato del menú del restaurante.")]
-        [ProducesResponseType(typeof(DishResponse), 200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(409)]
+        [SwaggerResponse(StatusCodes.Status200OK, "Plato eliminado exitosamente", typeof(DishResponse))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(DishResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Plato no encontrado", typeof(ApiError))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ApiErrorNotFoundExample))]
+        [SwaggerResponse(StatusCodes.Status409Conflict, "No se puede eliminar - plato en uso", typeof(ApiError))]
+        [SwaggerResponseExample(StatusCodes.Status409Conflict, typeof(ApiErrorDeleteConflictExample))]
         public async Task<IActionResult> Delete(Guid id)
         {
             var dish = await _service.DeleteAsync(id);
