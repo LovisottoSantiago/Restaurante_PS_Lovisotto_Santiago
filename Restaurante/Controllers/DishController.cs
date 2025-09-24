@@ -1,6 +1,9 @@
-﻿using Application.Interfaces.Service;
+﻿using Application.Features.Dishes.Commands;
+using Application.Features.Dishes.Queries;
 using Application.Models;
 using Application.Response;
+using Application.UseCases.DishUseCases.UpdateDish;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Restaurante.Examples.DishExamples;
 using Swashbuckle.AspNetCore.Annotations;
@@ -12,11 +15,10 @@ namespace Infrastructure.Controllers
     [Route("api/v1/[controller]")]
     public class DishController : ControllerBase
     {
-        private readonly IDishService _service;
-
-        public DishController(IDishService dishService)
+        private readonly IMediator _mediator;
+        public DishController(IMediator mediator)
         {
-            _service = dishService;
+            _mediator = mediator;
         }
 
         // POST /api/v1/Dish
@@ -32,8 +34,8 @@ namespace Infrastructure.Controllers
         [SwaggerResponseExample(StatusCodes.Status409Conflict, typeof(ApiErrorConflictExample))]
         [SwaggerRequestExample(typeof(DishRequest), typeof(DishRequestExample))]
         public async Task<IActionResult> Create([FromBody] DishRequest request)
-        {
-            var dish = await _service.CreateAsync(request);
+        {            
+            var dish = await _mediator.Send(new CreateDishCommand(request));
             return CreatedAtAction(nameof(GetById), new { id = dish.Id }, dish); // 201
         }
 
@@ -47,8 +49,8 @@ namespace Infrastructure.Controllers
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Parámetros de búsqueda inválidos", typeof(ApiError))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(ApiErrorGetBadRequestExample))]
         public async Task<IActionResult> GetAll([FromQuery] string? name, [FromQuery] int? category, [FromQuery] SortDirection? sortByPrice, [FromQuery] bool onlyActive = true)
-        {
-            var dishes = await _service.GetAllAsync(name, category, sortByPrice, onlyActive);
+        {            
+            var dishes = await _mediator.Send(new GetAllDishesQuery(name, category, sortByPrice, onlyActive));
             return Ok(dishes); // 200
         }
 
@@ -65,7 +67,7 @@ namespace Infrastructure.Controllers
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(ApiErrorNotFoundExample))]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var dish = await _service.GetByIdAsync(id);
+            var dish = await _mediator.Send(new GetDishByIdQuery(id));
             return Ok(dish); 
         }
 
@@ -85,7 +87,7 @@ namespace Infrastructure.Controllers
         [SwaggerRequestExample(typeof(DishUpdateRequest), typeof(DishUpdateRequestExample))]
         public async Task<IActionResult> Update(Guid id, [FromBody] DishUpdateRequest request)
         {
-            var updated = await _service.UpdateAsync(id, request);
+            var updated = await _mediator.Send(new UpdateDishCommand(id, request));
             return Ok(updated); // 200
         }
 
@@ -102,7 +104,7 @@ namespace Infrastructure.Controllers
         [SwaggerResponseExample(StatusCodes.Status409Conflict, typeof(ApiErrorDeleteConflictExample))]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var dish = await _service.DeleteAsync(id);
+            var dish = await _mediator.Send(new DeleteDishCommand(id));
             return Ok(dish);
         }
     }

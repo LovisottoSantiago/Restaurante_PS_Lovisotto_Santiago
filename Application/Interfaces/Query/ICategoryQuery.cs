@@ -4,7 +4,7 @@ namespace Application.Interfaces.Query
 {
     public interface ICategoryQuery
     {
-        Task<IReadOnlyList<Category>> GetAllAsync();
-        Task<bool> ExistsAsync(int categoryId);
+        Task<IReadOnlyList<Category>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<bool> ExistsAsync(int categoryId, CancellationToken cancellationToken = default);
     }
 }

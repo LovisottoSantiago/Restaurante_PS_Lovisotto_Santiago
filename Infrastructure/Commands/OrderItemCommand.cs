@@ -14,14 +14,14 @@ namespace Infrastructure.Commands
             _context = context;
         }
 
-        public async Task<OrderItem> UpdateStatusAsync(long orderId, long itemId, int newStatus)
+        public async Task<OrderItem> UpdateStatusAsync(long orderId, long itemId, int newStatus, CancellationToken cancellationToken = default)
         {
             var item = await _context.OrderItems
                 .Include(oi => oi.OrderNavigation)
                 .FirstOrDefaultAsync(oi => oi.OrderItemId == itemId && oi.Order == orderId);
 
             if (item == null)
-                return null; // el UseCase lanza NotFound
+                return null; // el Handler
 
             item.Status = newStatus;
             item.OrderNavigation.UpdateDate = DateTime.UtcNow;

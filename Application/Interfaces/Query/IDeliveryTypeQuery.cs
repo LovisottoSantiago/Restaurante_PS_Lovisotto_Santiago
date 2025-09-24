@@ -4,7 +4,7 @@ namespace Application.Interfaces.Query
 {
     public interface IDeliveryTypeQuery
     {
-        Task<IReadOnlyList<DeliveryType>> GetAllAsync();
-        Task<bool> ExistsAsync(int id);
+        Task<IReadOnlyList<DeliveryType>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default);
     }
 }

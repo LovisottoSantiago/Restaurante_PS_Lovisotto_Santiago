@@ -4,8 +4,8 @@ namespace Application.Interfaces.Command
 {
     public interface IDishCommand
     {
-        Task InsertAsync(Dish dish);
-        Task UpdateAsync(Dish dish);
-        Task DeleteAsync(Dish dish);
+        Task InsertAsync(Dish dish, CancellationToken cancellationToken = default);
+        Task UpdateAsync(Dish dish, CancellationToken cancellationToken = default);
+        Task DeleteAsync(Dish dish, CancellationToken cancellationToken = default);
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Application.Interfaces.Command;
 using Domain.Entities;
 using Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Commands
 {
@@ -14,19 +13,19 @@ namespace Infrastructure.Commands
             _context = context;
         }
 
-        public async Task InsertAsync(Dish dish)
+        public async Task InsertAsync(Dish dish, CancellationToken cancellationToken = default)
         {
             await _context.Dishes.AddAsync(dish);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Dish dish)
+        public async Task UpdateAsync(Dish dish, CancellationToken cancellationToken = default)
         {
             _context.Entry(dish).Property(d => d.Category).IsModified = true;
             _context.Dishes.Update(dish);
             await _context.SaveChangesAsync();
         }
-        public async Task DeleteAsync(Dish dish)
+        public async Task DeleteAsync(Dish dish, CancellationToken cancellationToken = default)
         {
             _context.Dishes.Remove(dish);
             await _context.SaveChangesAsync();

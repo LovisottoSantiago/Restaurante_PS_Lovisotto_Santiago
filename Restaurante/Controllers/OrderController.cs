@@ -1,7 +1,9 @@
-﻿using Application.Interfaces.Service;
+﻿using Application.Features.Orders.Commands;
+using Application.Features.Orders.Queries;
 using Application.Models;
 using Application.Response;
 using Infrastructure.Filters;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;
@@ -12,11 +14,11 @@ namespace Restaurante.Controllers
     [Route("api/v1/[controller]")]
     public class OrderController : ControllerBase
     {
-        private readonly IOrderService _service;
+        private readonly IMediator _mediator;
 
-        public OrderController(IOrderService service)
+        public OrderController(IMediator mediator)
         {
-            _service = service;
+            _mediator = mediator;
         }
 
         // POST /api/v1/Order
@@ -29,7 +31,7 @@ namespace Restaurante.Controllers
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] OrderRequest request)
         {
-            var order = await _service.CreateAsync(request);
+            var order = await _mediator.Send(new CreateOrderCommand(request));
             return CreatedAtAction(nameof(GetById), new { id = order.OrderNumber }, order);
         }
 
@@ -42,7 +44,7 @@ namespace Restaurante.Controllers
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get([FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] int? status)
         {
-            var orders = await _service.GetAllAsync(from, to, status);
+            var orders = await _mediator.Send(new GetAllOrdersQuery(from, to, status));
             return Ok(orders);
         }
 
@@ -54,7 +56,7 @@ namespace Restaurante.Controllers
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(long id)
         {
-            var order = await _service.GetByIdAsync(id);
+            var order = await _mediator.Send(new GetOrderByIdQuery(id));
             return Ok(order);
         }
 
@@ -68,7 +70,7 @@ namespace Restaurante.Controllers
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update(long id, [FromBody] OrderUpdateRequest request)
         {
-            var response = await _service.UpdateAsync(id, request);
+            var response = await _mediator.Send(new UpdateOrderCommand(id, request));
             return Ok(response);
         }
 
@@ -83,7 +85,7 @@ namespace Restaurante.Controllers
         [SwaggerResponse(StatusCodes.Status404NotFound, "Orden o item no encontrado", typeof(ApiError))]
         public async Task<IActionResult> UpdateItem([FromRoute] long id, [FromRoute] long itemId, [FromBody] OrderItemUpdateRequest request)
         {
-            var result = await _service.UpdateItemAsync(id, itemId, request);
+            var result = await _mediator.Send(new UpdateOrderItemCommand(id, itemId, request));
             return Ok(result);
         }
 

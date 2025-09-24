@@ -13,29 +13,31 @@ namespace Infrastructure.Commands
             _context = context;
         }
 
-        public async Task<Order> InsertAsync(Order order)
+        public async Task<Order> InsertAsync(Order order, CancellationToken cancellationToken = default)
         {
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
             return order;
         }
 
-        public async Task<Order> UpdateAsync(Order order)
+        public async Task<Order> UpdateAsync(Order order, CancellationToken cancellationToken = default)
         {
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
             return order;
         }
 
-        public async Task UpdateStatusAsync(long orderId, int overallStatus, DateTime updateDate)
+        public async Task UpdateStatusAsync(long orderId, int overallStatus, DateTime updateDate, CancellationToken cancellationToken = default)
         {
-            var order = await _context.Orders.FindAsync(orderId);
-            if (order == null) return;
+            {
+                var order = await _context.Orders.FindAsync(orderId);
+                if (order == null) return;
 
-            order.OverallStatus = overallStatus;
-            order.UpdateDate = updateDate;
+                order.OverallStatus = overallStatus;
+                order.UpdateDate = updateDate;
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

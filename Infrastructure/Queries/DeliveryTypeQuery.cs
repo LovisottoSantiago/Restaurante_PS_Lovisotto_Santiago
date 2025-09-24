@@ -14,14 +14,14 @@ namespace Infrastructure.Queries
             _context = context;
         }
 
-        public async Task<IReadOnlyList<DeliveryType>> GetAllAsync()
+        public async Task<IReadOnlyList<DeliveryType>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _context.DeliveryTypes
                 .AsNoTracking()
                 .ToListAsync();
         }
 
-        public async Task<bool> ExistsAsync(int deliveryTypeId)
+        public async Task<bool> ExistsAsync(int deliveryTypeId, CancellationToken cancellationToken = default)
         {
             return await _context.DeliveryTypes.AnyAsync(d => d.Id == deliveryTypeId);
         }

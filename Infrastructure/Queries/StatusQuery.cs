@@ -14,7 +14,7 @@ namespace Infrastructure.Queries
             _context = context;
         }
 
-        public async Task<IReadOnlyList<Status>> GetAllAsync()
+        public async Task<IReadOnlyList<Status>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _context.Statuses
                 .AsNoTracking()
