@@ -59,8 +59,10 @@ namespace Restaurante.Controllers
         [HttpGet("{id:long}")]
         [Produces("application/json")]
         [SwaggerOperation(Summary = "Obtener orden por número", Description = "Obtiene los detalles completos de una orden específica.")]
-        [ProducesResponseType(typeof(OrderDetailsResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+        [SwaggerResponse(StatusCodes.Status200OK, "Orden encontrada exitosamente", typeof(OrderDetailsResponse))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrderDetailsByIdResponseExample))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Orden no encontrada", typeof(ApiError))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(OrderNotFoundExample))]
         public async Task<IActionResult> GetById(long id)
         {
             var order = await _mediator.Send(new GetOrderByIdQuery(id));
@@ -77,6 +79,7 @@ namespace Restaurante.Controllers
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Datos de actualización inválidos", typeof(ApiError))]
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(OrderUpdateErrorExamples))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Orden no encontrada", typeof(ApiError))]
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(OrderNotFoundExample))]
         public async Task<IActionResult> Update(long id, [FromBody] OrderUpdateRequest request)
         {
             var response = await _mediator.Send(new UpdateOrderCommand(id, request));
@@ -89,10 +92,14 @@ namespace Restaurante.Controllers
         [Consumes("application/json")]
         [Produces("application/json")]
         [SwaggerOperation(Summary = "Actualizar estado de item individual", Description = "Actualiza el estado de un item específico dentro de una orden.")]
+        [SwaggerRequestExample(typeof(OrderItemUpdateRequest), typeof(OrderItemUpdateRequestExample))]
         [SwaggerResponse(StatusCodes.Status200OK, "Estado del item actualizado exitosamente", typeof(OrderUpdateReponse))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrderItemUpdateResponseExample))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Estado inválido o transición no permitida", typeof(ApiError))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(OrderItemUpdateErrorExamples))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Orden o item no encontrado", typeof(ApiError))]
-        public async Task<IActionResult> UpdateItem([FromRoute] long id, [FromRoute] long itemId, [FromBody] OrderItemUpdateRequest request)
+        [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(OrderItemNotFoundExamples))]
+        public async Task<IActionResult> UpdateItem([FromRoute] long id, [FromRoute] long itemId, [FromBody][Required] OrderItemUpdateRequest request)
         {
             var result = await _mediator.Send(new UpdateOrderItemCommand(id, itemId, request));
             return Ok(result);

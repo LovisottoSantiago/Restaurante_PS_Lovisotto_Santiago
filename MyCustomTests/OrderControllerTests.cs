@@ -368,7 +368,135 @@ namespace MyCustomTests
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
+        // ---------- CreateOrderWithDish ----------
+        private async Task<(long orderNumber, long itemId, decimal totalAmount)> CreateOrderWithDish(string dishName, int quantity = 1)
+        {
+            // 1) Crear un plato válido
+            var dish = new DishRequest
+            {
+                Name = dishName + Guid.NewGuid(),
+                Description = "Plato de prueba PATCH",
+                Price = 1000,
+                Category = 6, // pizzas existe en tus seeds
+                Image = "https://restaurant.com/images/test.jpg"
+            };
+            var dishResponse = await _client.PostAsJsonAsync("/api/v1/Dish", dish);
+            dishResponse.EnsureSuccessStatusCode();
+            var createdDish = await dishResponse.Content.ReadFromJsonAsync<DishResponse>();
 
+            // 2) Crear la orden con ese plato
+            var orderReq = new OrderRequest
+            {
+                Items = new List<Items>
+                {
+                    new Items { Id = createdDish!.Id, Quantity = quantity, Notes = "PATCH item" }
+                },
+                Delivery = new Delivery { Id = 1, To = "Av. Corrientes 1234" },
+                Notes = "Orden para PATCH test"
+            };
+            var postOrder = await _client.PostAsJsonAsync("/api/v1/Order", orderReq);
+            postOrder.EnsureSuccessStatusCode();
+            var createdOrder = await postOrder.Content.ReadFromJsonAsync<OrderCreateReponse>();
+
+            // 3) GET de la orden para sacar el itemId
+            var getOrder = await _client.GetAsync($"/api/v1/Order/{createdOrder!.OrderNumber}");
+            getOrder.EnsureSuccessStatusCode();
+            var order = await getOrder.Content.ReadFromJsonAsync<OrderDetailsResponse>();
+            var itemId = order!.Items.First().Id;
+
+            return (createdOrder.OrderNumber, itemId, order.TotalAmount);
+        }
+
+        // ---------- 18) PATCH 200 OK ----------
+        [Fact]
+        public async Task Patch_Should_Return_200_When_Update_Item_Status()
+        {
+            var (orderNumber, itemId, total) = await CreateOrderWithDish("plato patch1");
+
+            var patchResponse = await _client.PatchAsJsonAsync(
+                $"/api/v1/Order/{orderNumber}/item/{itemId}",
+                new { status = 2 } // En preparación
+            );
+
+            patchResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var updated = await patchResponse.Content.ReadFromJsonAsync<OrderUpdateReponse>();
+            updated.Should().NotBeNull();
+            updated!.OrderNumber.Should().Be(orderNumber);
+            updated.TotalAmount.Should().Be(total); // total no cambia
+        }
+
+        // ---------- 19) 400 STATUS INVALID ----------
+        [Fact]
+        public async Task Patch_Should_Return_400_When_Status_Is_Invalid()
+        {
+            var (orderNumber, itemId, _) = await CreateOrderWithDish("plato patch2");
+
+            var patchResponse = await _client.PatchAsJsonAsync(
+                $"/api/v1/Order/{orderNumber}/item/{itemId}",
+                new { status = 999 }
+            );
+
+            patchResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var error = await patchResponse.Content.ReadFromJsonAsync<ApiError>();
+            error!.Message.Should().Be("El estado especificado no es válido");
+        }
+        
+        // ---------- 20) 400 TRANSICIÓN INVÁLIDA ----------
+        [Fact]
+        public async Task Patch_Should_Return_400_When_Transition_Is_Invalid()
+        {
+            var (orderNumber, itemId, _) = await CreateOrderWithDish("plato patch3");
+
+            // primero lo llevo a Entregado (4)
+            var firstPatch = await _client.PatchAsJsonAsync(
+                $"/api/v1/Order/{orderNumber}/item/{itemId}",
+                new { status = 4 }
+            );
+            firstPatch.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            // intentar volver a En preparación (2) → inválido
+            var invalidPatch = await _client.PatchAsJsonAsync(
+                $"/api/v1/Order/{orderNumber}/item/{itemId}",
+                new { status = 2 }
+            );
+
+            invalidPatch.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var error = await invalidPatch.Content.ReadFromJsonAsync<ApiError>();
+            error!.Message.Should().Be("No se puede cambiar de 'Entregado' a 'En preparación'");
+        }
+        
+        // ---------- 21) 404 ORDER NOT FOUND ----------
+        [Fact]
+        public async Task Patch_Should_Return_404_When_Order_Not_Found()
+        {
+            var response = await _client.PatchAsJsonAsync(
+                "/api/v1/Order/999999/item/1",
+                new { status = 2 }
+            );
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+            var error = await response.Content.ReadFromJsonAsync<ApiError>();
+            error!.Message.Should().Be("Orden no encontrada");
+        }
+        
+        // ---------- 21) 404 ITEM NOT FOUND ----------
+        [Fact]
+        public async Task Patch_Should_Return_404_When_Item_Not_Found()
+        {
+            var (orderNumber, itemId, _) = await CreateOrderWithDish("plato patch4");
+
+            var fakeItemId = itemId + 9999; // aseguramos que no exista
+
+            var response = await _client.PatchAsJsonAsync(
+                $"/api/v1/Order/{orderNumber}/item/{fakeItemId}",
+                new { status = 2 }
+            );
+
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+            var error = await response.Content.ReadFromJsonAsync<ApiError>();
+            error!.Message.Should().Be("Item no encontrado en la orden");
+        }
 
 
     }

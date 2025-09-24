@@ -74,6 +74,12 @@ builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderDetailsResponseExample>()
 builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderSearchErrorExample>();
 builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderUpdateResponseExample>();
 builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderUpdateErrorExamples>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderNotFoundExample>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderDetailsByIdResponseExample>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderItemUpdateRequestExample>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderItemUpdateResponseExample>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderItemUpdateErrorExamples>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderItemNotFoundExamples>();
 
 // Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

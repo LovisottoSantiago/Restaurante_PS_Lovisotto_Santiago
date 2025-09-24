@@ -31,20 +31,23 @@ namespace Application.Features.Orders.Commands
             if (order.OverallStatus == (int)OrderStatus.Closed)
                 throw new BadRequestException400("No se puede modificar una orden cerrada");
 
-            if (order.OverallStatus == (int)OrderStatus.Ready)
-                throw new BadRequestException400("No se puede modificar una orden que ya está lista para entregar");
+            if (!Enum.IsDefined(typeof(OrderStatus), request.Status))
+                throw new BadRequestException400("El estado especificado no es válido");
 
-            if (order.OverallStatus == (int)OrderStatus.Delivery)
-                throw new BadRequestException400("No se puede modificar una orden que ya está en proceso de entrega");
-
-            var updatedItem = await _itemCommand.UpdateStatusAsync(command.OrderId, command.ItemId, request.Status, cancellationToken);
-
-            if (updatedItem == null)
+            var item = order.OrderItems.FirstOrDefault(i => i.OrderItemId == command.ItemId);
+            if (item == null)
                 throw new NotFoundException404("Item no encontrado en la orden");
-
+            
+            if (request.Status <= item.Status)
+                throw new BadRequestException400("No se puede cambiar de 'Entregado' a 'En preparación'");
+            
+            var updatedItem = await _itemCommand.UpdateStatusAsync(command.OrderId, command.ItemId, request.Status, cancellationToken);
+            if (updatedItem == null)
+                throw new NotFoundException404("Error al actualizar el item");
+            
             order = await _query.GetByIdAsync(command.OrderId, cancellationToken);
-
             var statuses = order.OrderItems.Select(i => i.Status).ToList();
+            
             var overallStatus = statuses.Min();
             order.OverallStatus = overallStatus;
 

@@ -35,11 +35,8 @@ namespace Application.Features.Orders.Commands
             if (order.OverallStatus == (int)OrderStatus.Closed)
                 throw new BadRequestException400("No se puede modificar una orden cerrada");
 
-            if (order.OverallStatus == (int)OrderStatus.Ready)
-                throw new BadRequestException400("No se puede modificar una orden que ya está lista para entregar");
-
-            if (order.OverallStatus == (int)OrderStatus.Delivery)
-                throw new BadRequestException400("No se puede modificar una orden que ya está en proceso de entrega");
+            if (order.OverallStatus != (int)OrderStatus.Pending)
+                throw new BadRequestException400("No se puede modificar una orden que ya está en preparación");
 
             decimal total = 0;
 
