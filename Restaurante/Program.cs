@@ -3,11 +3,6 @@ using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Restaurante.DependencyInjection;
-using Restaurante.Examples.CategoryExamples;
-using Restaurante.Examples.DeliveryTypeExamples;
-using Restaurante.Examples.DishExamples;
-using Restaurante.Examples.OrderExamples;
-using Restaurante.Examples.StatusExamples;
 using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,32 +49,8 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-
-builder.Services.AddSwaggerExamplesFromAssemblyOf<ApiErrorConflictExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<ApiErrorGetBadRequestExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<ApiErrorDeleteConflictExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<ApiErrorNotFoundExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<ApiErrorPostBadRequestExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<ApiErrorPutBadRequestExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<DishListResponseExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<DishRequestExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<DishResponseExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<DishUpdateRequestExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<CategoryResponseExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<DeliveryTypeResponseExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderRequestExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderCreateResponseExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderErrorExamples>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderDetailsResponseExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderSearchErrorExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderUpdateResponseExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderUpdateErrorExamples>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderNotFoundExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderDetailsByIdResponseExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderItemUpdateRequestExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderItemUpdateResponseExample>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderItemUpdateErrorExamples>();
-builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderItemNotFoundExamples>();
+// Examples
+builder.Services.AddExamples();
 
 // Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

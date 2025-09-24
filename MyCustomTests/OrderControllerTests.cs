@@ -440,7 +440,7 @@ namespace MyCustomTests
             var error = await patchResponse.Content.ReadFromJsonAsync<ApiError>();
             error!.Message.Should().Be("El estado especificado no es válido");
         }
-        
+
         // ---------- 20) 400 TRANSICIÓN INVÁLIDA ----------
         [Fact]
         public async Task Patch_Should_Return_400_When_Transition_Is_Invalid()
@@ -462,9 +462,9 @@ namespace MyCustomTests
 
             invalidPatch.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var error = await invalidPatch.Content.ReadFromJsonAsync<ApiError>();
-            error!.Message.Should().Be("No se puede cambiar de 'Entregado' a 'En preparación'");
+            error!.Message.Should().Be("Transición de estado no permitida");
         }
-        
+
         // ---------- 21) 404 ORDER NOT FOUND ----------
         [Fact]
         public async Task Patch_Should_Return_404_When_Order_Not_Found()
@@ -478,8 +478,8 @@ namespace MyCustomTests
             var error = await response.Content.ReadFromJsonAsync<ApiError>();
             error!.Message.Should().Be("Orden no encontrada");
         }
-        
-        // ---------- 21) 404 ITEM NOT FOUND ----------
+
+        // ---------- 22) 404 ITEM NOT FOUND ----------
         [Fact]
         public async Task Patch_Should_Return_404_When_Item_Not_Found()
         {
@@ -496,6 +496,65 @@ namespace MyCustomTests
 
             var error = await response.Content.ReadFromJsonAsync<ApiError>();
             error!.Message.Should().Be("Item no encontrado en la orden");
+        }
+
+        // ---------- 23) PATCH Pendiente → Listo ----------
+        [Fact]
+        public async Task Patch_Should_Return_200_When_Pending_To_Ready()
+        {
+            var (orderNumber, itemId, total) = await CreateOrderWithDish("plato patch5");
+
+            var patchResponse = await _client.PatchAsJsonAsync(
+                $"/api/v1/Order/{orderNumber}/item/{itemId}",
+                new { status = 3 } // Ready
+            );
+
+            patchResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var updated = await patchResponse.Content.ReadFromJsonAsync<OrderUpdateReponse>();
+            updated.Should().NotBeNull();
+            updated!.OrderNumber.Should().Be(orderNumber);
+            updated.TotalAmount.Should().Be(total);
+        }
+
+        // ---------- 24) PATCH Cancelar item ----------
+        [Fact]
+        public async Task Patch_Should_Return_200_When_Cancel_Item()
+        {
+            var (orderNumber, itemId, total) = await CreateOrderWithDish("plato patch6");
+
+            var patchResponse = await _client.PatchAsJsonAsync(
+                $"/api/v1/Order/{orderNumber}/item/{itemId}",
+                new { status = 5 } // Cancelled
+            );
+
+            patchResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var updated = await patchResponse.Content.ReadFromJsonAsync<OrderUpdateReponse>();
+            updated.Should().NotBeNull();
+            updated!.OrderNumber.Should().Be(orderNumber);
+        }
+
+        // ---------- 25) PATCH Delivery después de Ready ----------
+        [Fact]
+        public async Task Patch_Should_Return_200_When_Ready_To_Delivery()
+        {
+            var (orderNumber, itemId, total) = await CreateOrderWithDish("plato patch7");
+
+            // 1) Pendiente → Ready
+            await _client.PatchAsJsonAsync(
+                $"/api/v1/Order/{orderNumber}/item/{itemId}",
+                new { status = 3 }
+            );
+
+            // 2) Ready → Delivery
+            var patchResponse = await _client.PatchAsJsonAsync(
+                $"/api/v1/Order/{orderNumber}/item/{itemId}",
+                new { status = 4 }
+            );
+
+            patchResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var updated = await patchResponse.Content.ReadFromJsonAsync<OrderUpdateReponse>();
+            updated!.OrderNumber.Should().Be(orderNumber);
+            updated.TotalAmount.Should().Be(total);
         }
 
 

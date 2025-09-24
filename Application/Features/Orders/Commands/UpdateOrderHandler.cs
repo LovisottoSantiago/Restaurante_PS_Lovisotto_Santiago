@@ -31,12 +31,9 @@ namespace Application.Features.Orders.Commands
 
             if (request.Items == null || !request.Items.Any())
                 throw new BadRequestException400("Debe especificar al menos un item para actualizar");
-
+            
             if (order.OverallStatus == (int)OrderStatus.Closed)
                 throw new BadRequestException400("No se puede modificar una orden cerrada");
-
-            if (order.OverallStatus != (int)OrderStatus.Pending)
-                throw new BadRequestException400("No se puede modificar una orden que ya está en preparación");
 
             decimal total = 0;
 
@@ -54,9 +51,9 @@ namespace Application.Features.Orders.Commands
                 var existingItem = order.OrderItems.FirstOrDefault(i => i.Dish == item.Id);
 
                 if (existingItem != null)
-                {
-                    if (existingItem.Status != (int)OrderStatus.Pending)
-                        throw new BadRequestException400("No se puede modificar un item que ya está en preparación");
+                {                    
+                    if (existingItem.Status == (int)OrderStatus.Closed)
+                        throw new BadRequestException400("No se puede modificar un item que ya está cerrado");
 
                     existingItem.Quantity = item.Quantity;
                     existingItem.Notes = item.Notes;
@@ -71,15 +68,14 @@ namespace Application.Features.Orders.Commands
                         Notes = item.Notes,
                         Status = (int)OrderStatus.Pending,
                         CreateDate = DateTime.UtcNow,
-                        DishNavigation = dish 
+                        DishNavigation = dish
                     });
                 }
             }
-            
+
             order.Price = order.OrderItems.Sum(i => i.Quantity * i.DishNavigation.Price);
-
             order.UpdateDate = DateTime.UtcNow;
-
+           
             if (order.OrderItems.Any())
                 order.OverallStatus = order.OrderItems.Min(i => i.Status);
 

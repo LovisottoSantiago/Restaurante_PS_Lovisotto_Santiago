@@ -37,20 +37,26 @@ namespace Application.Features.Orders.Commands
             var item = order.OrderItems.FirstOrDefault(i => i.OrderItemId == command.ItemId);
             if (item == null)
                 throw new NotFoundException404("Item no encontrado en la orden");
-            
+
             if (request.Status <= item.Status)
-                throw new BadRequestException400("No se puede cambiar de 'Entregado' a 'En preparación'");
-            
-            var updatedItem = await _itemCommand.UpdateStatusAsync(command.OrderId, command.ItemId, request.Status, cancellationToken);
+            {
+                throw new BadRequestException400("Transición de estado no permitida");
+            }
+
+            var updatedItem = await _itemCommand.UpdateStatusAsync(
+                command.OrderId,
+                command.ItemId,
+                request.Status,
+                cancellationToken
+            );
+
             if (updatedItem == null)
                 throw new NotFoundException404("Error al actualizar el item");
             
             order = await _query.GetByIdAsync(command.OrderId, cancellationToken);
             var statuses = order.OrderItems.Select(i => i.Status).ToList();
-            
-            var overallStatus = statuses.Min();
-            order.OverallStatus = overallStatus;
 
+            order.OverallStatus = statuses.Min();
             order.UpdateDate = DateTime.UtcNow;
 
             await _orderCommand.UpdateStatusAsync(order.OrderId, order.OverallStatus, order.UpdateDate, cancellationToken);
