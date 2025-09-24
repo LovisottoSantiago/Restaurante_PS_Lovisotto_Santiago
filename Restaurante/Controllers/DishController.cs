@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Restaurante.Examples.DishExamples;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;
+using System.ComponentModel.DataAnnotations;
 
 namespace Infrastructure.Controllers
 {
@@ -33,7 +34,7 @@ namespace Infrastructure.Controllers
         [SwaggerResponse(StatusCodes.Status409Conflict, "Ya existe un plato con el mismo nombre", typeof(ApiError))]
         [SwaggerResponseExample(StatusCodes.Status409Conflict, typeof(ApiErrorConflictExample))]
         [SwaggerRequestExample(typeof(DishRequest), typeof(DishRequestExample))]
-        public async Task<IActionResult> Create([FromBody] DishRequest request)
+        public async Task<IActionResult> Create([FromBody][Required] DishRequest request)
         {            
             var dish = await _mediator.Send(new CreateDishCommand(request));
             return CreatedAtAction(nameof(GetById), new { id = dish.Id }, dish); // 201

@@ -1,6 +1,6 @@
 ﻿namespace Application.Response
 {
-    public class OrderCreateResponse
+    public class OrderCreateReponse
     {
         public long OrderNumber {  get; set; }
         public decimal TotalAmount { get; set; }

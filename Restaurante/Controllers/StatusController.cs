@@ -1,7 +1,10 @@
 ﻿using Application.Features.Statuses.Queries;
+using Application.Response;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Restaurante.Examples.StatusExamples;
 using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Restaurante.Controllers
 {
@@ -21,6 +24,8 @@ namespace Restaurante.Controllers
         [Consumes("application/json")]
         [Produces("application/json")]
         [SwaggerOperation(Summary = "Obtener estados de órdenes", Description = "Obtiene todos los estados posibles para las órdenes y sus items.")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Lista de estados obtenida exitosamente", typeof(IReadOnlyList<GenericResponse>))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(StatusResponseExample))]
         public async Task<IActionResult> GetAll()
         {
             var statuses = await _mediator.Send(new GetAllStatusesQuery());

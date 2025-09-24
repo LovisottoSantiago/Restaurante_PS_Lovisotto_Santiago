@@ -3,7 +3,11 @@ using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Restaurante.DependencyInjection;
+using Restaurante.Examples.CategoryExamples;
+using Restaurante.Examples.DeliveryTypeExamples;
 using Restaurante.Examples.DishExamples;
+using Restaurante.Examples.OrderExamples;
+using Restaurante.Examples.StatusExamples;
 using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -61,6 +65,15 @@ builder.Services.AddSwaggerExamplesFromAssemblyOf<DishListResponseExample>();
 builder.Services.AddSwaggerExamplesFromAssemblyOf<DishRequestExample>();
 builder.Services.AddSwaggerExamplesFromAssemblyOf<DishResponseExample>();
 builder.Services.AddSwaggerExamplesFromAssemblyOf<DishUpdateRequestExample>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<CategoryResponseExample>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<DeliveryTypeResponseExample>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderRequestExample>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderCreateResponseExample>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderErrorExamples>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderDetailsResponseExample>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderSearchErrorExample>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderUpdateResponseExample>();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<OrderUpdateErrorExamples>();
 
 // Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

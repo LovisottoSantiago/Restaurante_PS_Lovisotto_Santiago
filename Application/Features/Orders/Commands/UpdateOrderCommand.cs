@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Features.Orders.Commands
 {
-    public class UpdateOrderCommand : IRequest<OrderUpdateResponse>
+    public class UpdateOrderCommand : IRequest<OrderUpdateReponse>
     {
         public long OrderId { get; }
         public OrderUpdateRequest Request { get; }

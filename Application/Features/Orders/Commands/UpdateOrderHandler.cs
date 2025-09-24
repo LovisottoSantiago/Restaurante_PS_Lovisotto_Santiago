@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Application.Features.Orders.Commands
 {
-    public class UpdateOrderHandler : IRequestHandler<UpdateOrderCommand, OrderUpdateResponse>
+    public class UpdateOrderHandler : IRequestHandler<UpdateOrderCommand, OrderUpdateReponse>
     {
         private readonly IOrderCommand _command;
         private readonly IOrderQuery _orderQuery;
@@ -21,7 +21,7 @@ namespace Application.Features.Orders.Commands
             _dishQuery = dishQuery;
         }
 
-        public async Task<OrderUpdateResponse> Handle(UpdateOrderCommand command, CancellationToken cancellationToken)
+        public async Task<OrderUpdateReponse> Handle(UpdateOrderCommand command, CancellationToken cancellationToken)
         {
             var request = command.Request;
             var order = await _orderQuery.GetByIdAsync(command.OrderId, cancellationToken);
@@ -29,11 +29,19 @@ namespace Application.Features.Orders.Commands
             if (order == null)
                 throw new NotFoundException404("Orden no encontrada");
 
+            if (request.Items == null || !request.Items.Any())
+                throw new BadRequestException400("Debe especificar al menos un item para actualizar");
+
             if (order.OverallStatus == (int)OrderStatus.Closed)
                 throw new BadRequestException400("No se puede modificar una orden cerrada");
 
+            if (order.OverallStatus == (int)OrderStatus.Ready)
+                throw new BadRequestException400("No se puede modificar una orden que ya está lista para entregar");
+
+            if (order.OverallStatus == (int)OrderStatus.Delivery)
+                throw new BadRequestException400("No se puede modificar una orden que ya está en proceso de entrega");
+
             decimal total = 0;
-            var updatedItems = new List<OrderItem>();
 
             foreach (var item in request.Items)
             {
@@ -46,24 +54,41 @@ namespace Application.Features.Orders.Commands
 
                 total += dish.Price * item.Quantity;
 
-                updatedItems.Add(new OrderItem
+                var existingItem = order.OrderItems.FirstOrDefault(i => i.Dish == item.Id);
+
+                if (existingItem != null)
                 {
-                    Dish = item.Id,
-                    Quantity = item.Quantity,
-                    Notes = item.Notes,
-                    Status = (int)OrderStatus.Pending,
-                    CreateDate = DateTime.UtcNow
-                });
+                    if (existingItem.Status != (int)OrderStatus.Pending)
+                        throw new BadRequestException400("No se puede modificar un item que ya está en preparación");
 
+                    existingItem.Quantity = item.Quantity;
+                    existingItem.Notes = item.Notes;
+                    existingItem.CreateDate = DateTime.UtcNow;
+                }
+                else
+                {
+                    order.OrderItems.Add(new OrderItem
+                    {
+                        Dish = item.Id,
+                        Quantity = item.Quantity,
+                        Notes = item.Notes,
+                        Status = (int)OrderStatus.Pending,
+                        CreateDate = DateTime.UtcNow,
+                        DishNavigation = dish 
+                    });
+                }
             }
+            
+            order.Price = order.OrderItems.Sum(i => i.Quantity * i.DishNavigation.Price);
 
-            order.OrderItems = updatedItems;
-            order.Price = total;
             order.UpdateDate = DateTime.UtcNow;
+
+            if (order.OrderItems.Any())
+                order.OverallStatus = order.OrderItems.Min(i => i.Status);
 
             var updated = await _command.UpdateAsync(order, cancellationToken);
 
-            return new OrderUpdateResponse
+            return new OrderUpdateReponse
             {
                 OrderNumber = updated.OrderId,
                 TotalAmount = updated.Price,

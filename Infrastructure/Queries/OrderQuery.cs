@@ -48,13 +48,13 @@ namespace Infrastructure.Queries
                     .ThenInclude(orderItem => orderItem.DishNavigation)
                 .Include(order => order.OrderItems)
                     .ThenInclude(orderItem => orderItem.StatusNavigation)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(order => order.OrderId == orderId);
+                //.AsNoTracking()
+                .FirstOrDefaultAsync(order => order.OrderId == orderId, cancellationToken);
         }
         public async Task<bool> ExistsOrderWithDishAsync(Guid dishId, CancellationToken cancellationToken = default)
         {
             return await _context.Orders
-                .AnyAsync(o => o.OrderItems.Any(oi => oi.Dish == dishId));
+                .AnyAsync(o => o.OrderItems.Any(oi => oi.Dish == dishId), cancellationToken);
         }
 
     }

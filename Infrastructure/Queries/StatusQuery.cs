@@ -18,7 +18,7 @@ namespace Infrastructure.Queries
         {
             return await _context.Statuses
                 .AsNoTracking()
-                .ToListAsync(); 
+                .ToListAsync(cancellationToken); 
         }
     }
 }

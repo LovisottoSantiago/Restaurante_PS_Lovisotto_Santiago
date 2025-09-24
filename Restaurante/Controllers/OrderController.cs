@@ -5,8 +5,10 @@ using Application.Response;
 using Infrastructure.Filters;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Restaurante.Examples.OrderExamples;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;
+using System.ComponentModel.DataAnnotations;
 
 namespace Restaurante.Controllers
 {
@@ -27,9 +29,12 @@ namespace Restaurante.Controllers
         [Consumes("application/json")]
         [Produces("application/json")]
         [SwaggerOperation(Summary = "Crear nueva orden", Description = "Crea una nueva orden con los platos solicitados por el cliente.")]
-        [ProducesResponseType(typeof(OrderCreateResponse), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] OrderRequest request)
+        [SwaggerRequestExample(typeof(OrderRequest), typeof(OrderRequestExample))]
+        [SwaggerResponse(StatusCodes.Status201Created, "Orden creada exitosamente", typeof(OrderCreateReponse))]
+        [SwaggerResponseExample(StatusCodes.Status201Created, typeof(OrderCreateResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Datos de orden inválidos", typeof(ApiError))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(OrderErrorExamples))]
+        public async Task<IActionResult> Create([FromBody][Required] OrderRequest request)
         {
             var order = await _mediator.Send(new CreateOrderCommand(request));
             return CreatedAtAction(nameof(GetById), new { id = order.OrderNumber }, order);
@@ -38,10 +43,12 @@ namespace Restaurante.Controllers
         // GET /api/v1/Order
         [HttpGet]
         [Produces("application/json")]
-        [SwaggerOperation(Summary = "Obtener todas las órdenes",
-            Description = "Devuelve la lista de órdenes con filtros opcionales por fecha y estado.")]
-        [ProducesResponseType(typeof(IEnumerable<OrderDetailsResponse>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
+        [SwaggerOperation(Summary = "Buscar órdenes",
+            Description = "Obtiene una lista de órdenes con filtros opcionales.")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Lista de órdenes obtenida exitosamente", typeof(IEnumerable<OrderDetailsResponse>))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrderDetailsResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Parámetros de búsqueda inválidos", typeof(ApiError))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(OrderSearchErrorExample))]
         public async Task<IActionResult> Get([FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] int? status)
         {
             var orders = await _mediator.Send(new GetAllOrdersQuery(from, to, status));
@@ -51,7 +58,7 @@ namespace Restaurante.Controllers
         // GET /api/v1/Order/{id}
         [HttpGet("{id:long}")]
         [Produces("application/json")]
-        [SwaggerOperation(Summary = "Obtener orden por ID", Description = "Devuelve el detalle de una orden específica por su número.")]
+        [SwaggerOperation(Summary = "Obtener orden por número", Description = "Obtiene los detalles completos de una orden específica.")]
         [ProducesResponseType(typeof(OrderDetailsResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(long id)
@@ -64,10 +71,12 @@ namespace Restaurante.Controllers
         [HttpPut("{id:long}")]
         [Produces("application/json")]
         [SwaggerOperation(Summary = "Actualizar orden existente", Description = "Actualiza los items de una orden existente.")]
-        [SwaggerRequestExample(typeof(OrderUpdateRequest), typeof(Restaurante.Examples.OrderExamples.OrderUpdateRequestExample))]
-        [ProducesResponseType(typeof(OrderUpdateResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+        [SwaggerRequestExample(typeof(OrderUpdateRequest), typeof(OrderUpdateRequestExample))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Orden actualizada exitosamente", typeof(OrderUpdateReponse))]
+        [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrderUpdateResponseExample))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Datos de actualización inválidos", typeof(ApiError))]
+        [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(OrderUpdateErrorExamples))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Orden no encontrada", typeof(ApiError))]
         public async Task<IActionResult> Update(long id, [FromBody] OrderUpdateRequest request)
         {
             var response = await _mediator.Send(new UpdateOrderCommand(id, request));
@@ -80,7 +89,7 @@ namespace Restaurante.Controllers
         [Consumes("application/json")]
         [Produces("application/json")]
         [SwaggerOperation(Summary = "Actualizar estado de item individual", Description = "Actualiza el estado de un item específico dentro de una orden.")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Estado del item actualizado exitosamente", typeof(OrderUpdateResponse))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Estado del item actualizado exitosamente", typeof(OrderUpdateReponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Estado inválido o transición no permitida", typeof(ApiError))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Orden o item no encontrado", typeof(ApiError))]
         public async Task<IActionResult> UpdateItem([FromRoute] long id, [FromRoute] long itemId, [FromBody] OrderItemUpdateRequest request)

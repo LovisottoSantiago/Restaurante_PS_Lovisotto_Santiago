@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Application.Features.Orders.Commands
 {
-    public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderCreateResponse>
+    public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderCreateReponse>
     {
         private readonly IOrderCommand _command;
         private readonly IDishQuery _dishQuery;
@@ -21,7 +21,7 @@ namespace Application.Features.Orders.Commands
             _deliveryQuery = deliveryQuery;
         }
 
-        public async Task<OrderCreateResponse> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
+        public async Task<OrderCreateReponse> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
         {
             var request = command.Request;
 
@@ -72,7 +72,7 @@ namespace Application.Features.Orders.Commands
 
             var orderCreated = await _command.InsertAsync(order, cancellationToken);
 
-            return new OrderCreateResponse
+            return new OrderCreateReponse
             {
                 OrderNumber = orderCreated.OrderId,
                 TotalAmount = orderCreated.Price,

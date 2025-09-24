@@ -13,15 +13,15 @@ namespace Restaurante.Examples.OrderExamples
                 {
                     new Items
                     {
-                        Id = Guid.Parse("F71F0B60-6762-4B37-9F97-09912EB9C061"),
+                        Id = Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
                         Quantity = 3,
-                        Notes = "Queso extra"
+                        Notes = "Sin albahaca, extra queso"
                     },
                     new Items
                     {
-                        Id = Guid.Parse("3F5570A4-E36F-4EDD-AB3D-6292C85DF27E"),
-                        Quantity = 4,
-                        Notes = "Con dulce de leche repostero"
+                        Id = Guid.Parse("456e7890-a12b-34c5-d678-901234567890"),
+                        Quantity = 1,
+                        Notes = "Para compartir"
                     }
                 }
             };

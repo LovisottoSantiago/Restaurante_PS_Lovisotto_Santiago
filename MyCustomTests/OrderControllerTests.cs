@@ -55,7 +55,7 @@ namespace MyCustomTests
 
             response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-            var created = await response.Content.ReadFromJsonAsync<OrderCreateResponse>();
+            var created = await response.Content.ReadFromJsonAsync<OrderCreateReponse>();
             created.Should().NotBeNull();
             created!.OrderNumber.Should().BeGreaterThan(0);
             created.TotalAmount.Should().BeGreaterThan(0);
@@ -277,7 +277,7 @@ namespace MyCustomTests
             var postBody = await postResponse.Content.ReadAsStringAsync();
             postResponse.StatusCode.Should().Be(HttpStatusCode.Created, $"POST devolvió: {postBody}");
 
-            var created = await postResponse.Content.ReadFromJsonAsync<OrderCreateResponse>();
+            var created = await postResponse.Content.ReadFromJsonAsync<OrderCreateReponse>();
 
             // GET BY ID con el número de orden creado
             var response = await _client.GetAsync($"/api/v1/Order/{created!.OrderNumber}");

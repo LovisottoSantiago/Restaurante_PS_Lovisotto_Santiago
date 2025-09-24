@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Features.Orders.Commands
 {
-    public class CreateOrderCommand : IRequest<OrderCreateResponse>
+    public class CreateOrderCommand : IRequest<OrderCreateReponse>
     {
         public OrderRequest Request { get; }
         public CreateOrderCommand(OrderRequest request)

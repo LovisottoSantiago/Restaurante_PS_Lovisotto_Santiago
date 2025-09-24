@@ -23,7 +23,7 @@ namespace Infrastructure.Commands
         public async Task<Order> UpdateAsync(Order order, CancellationToken cancellationToken = default)
         {
             _context.Orders.Update(order);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
             return order;
         }
 

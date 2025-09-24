@@ -17,12 +17,12 @@ namespace Infrastructure.Queries
         {
             return await _context.Categories
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
         public async Task<bool> ExistsAsync(int categoryId, CancellationToken cancellationToken = default)
         {
-            return await _context.Categories.AnyAsync(c => c.Id == categoryId);
+            return await _context.Categories.AnyAsync(c => c.Id == categoryId, cancellationToken);
         }
 
     }
