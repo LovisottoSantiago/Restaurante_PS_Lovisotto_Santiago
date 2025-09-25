@@ -462,7 +462,7 @@ namespace MyCustomTests
 
             invalidPatch.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var error = await invalidPatch.Content.ReadFromJsonAsync<ApiError>();
-            error!.Message.Should().Be("Transición de estado no permitida");
+            error!.Message.Should().Be("Transición no permitida");
         }
 
         // ---------- 21) 404 ORDER NOT FOUND ----------

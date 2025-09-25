@@ -1,4 +1,6 @@
-﻿using Application.Interfaces.Query;
+﻿using Application.Exceptions;
+using Application.Interfaces.Query;
+using Application.Models;
 using Application.Response;
 using MediatR;
 
@@ -15,6 +17,11 @@ namespace Application.Features.Dishes.Queries
 
         public async Task<IReadOnlyList<DishResponse>> Handle(GetAllDishesQuery request, CancellationToken cancellationToken)
         {
+            if (request.SortByPrice.HasValue && !Enum.IsDefined(typeof(SortDirection), request.SortByPrice.Value))
+            {
+                throw new BadRequestException400("Parámetros de ordenamiento inválidos");
+            }
+
             var dishes = await _query.GetAllAsync(request.Name, request.CategoryId, request.SortByPrice, request.OnlyActive, cancellationToken);
 
             return dishes.Select(d => new DishResponse

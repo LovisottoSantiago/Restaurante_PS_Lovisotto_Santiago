@@ -31,7 +31,7 @@ namespace Application.Features.Orders.Commands
 
             if (request.Items == null || !request.Items.Any())
                 throw new BadRequestException400("Debe especificar al menos un item para actualizar");
-            
+
             if (order.OverallStatus == (int)OrderStatus.Closed)
                 throw new BadRequestException400("No se puede modificar una orden cerrada");
 
@@ -46,24 +46,23 @@ namespace Application.Features.Orders.Commands
                 if (dish == null || !dish.Available)
                     throw new BadRequestException400("El plato especificado no está disponible");
 
-                total += dish.Price * item.Quantity;
-
                 var existingItem = order.OrderItems.FirstOrDefault(i => i.Dish == item.Id);
 
                 if (existingItem != null)
-                {                    
+                {
                     if (existingItem.Status == (int)OrderStatus.Closed)
                         throw new BadRequestException400("No se puede modificar un item que ya está cerrado");
 
                     existingItem.Quantity = item.Quantity;
                     existingItem.Notes = item.Notes;
                     existingItem.CreateDate = DateTime.UtcNow;
+                    existingItem.Dish = item.Id; 
                 }
                 else
                 {
                     order.OrderItems.Add(new OrderItem
                     {
-                        Dish = item.Id,
+                        Dish = item.Id, 
                         Quantity = item.Quantity,
                         Notes = item.Notes,
                         Status = (int)OrderStatus.Pending,
@@ -72,12 +71,13 @@ namespace Application.Features.Orders.Commands
                     });
                 }
             }
-
+            
             order.Price = order.OrderItems.Sum(i => i.Quantity * i.DishNavigation.Price);
             order.UpdateDate = DateTime.UtcNow;
-           
+
             if (order.OrderItems.Any())
                 order.OverallStatus = order.OrderItems.Min(i => i.Status);
+
 
             var updated = await _command.UpdateAsync(order, cancellationToken);
 

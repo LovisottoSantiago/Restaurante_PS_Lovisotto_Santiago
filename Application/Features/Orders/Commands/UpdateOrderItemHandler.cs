@@ -38,9 +38,9 @@ namespace Application.Features.Orders.Commands
             if (item == null)
                 throw new NotFoundException404("Item no encontrado en la orden");
 
-            if (request.Status <= item.Status)
+            if (request.Status < item.Status)
             {
-                throw new BadRequestException400("Transición de estado no permitida");
+                throw new BadRequestException400("Transición no permitida");
             }
 
             var updatedItem = await _itemCommand.UpdateStatusAsync(
