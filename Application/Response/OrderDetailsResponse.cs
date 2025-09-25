@@ -1,6 +1,4 @@
-﻿using Application.Models;
-
-namespace Application.Response
+﻿namespace Application.Response
 {
     public class OrderDetailsResponse
     {

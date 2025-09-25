@@ -65,7 +65,7 @@ namespace Application.Features.Orders.Commands
                 Notes = request.Notes,
                 CreateDate = DateTime.UtcNow,
                 UpdateDate = DateTime.UtcNow,
-                OverallStatus = 1, // Pendiente
+                OverallStatus = (int)OrderStatus.Pending, 
                 Price = total,
                 OrderItems = orderItems
             };

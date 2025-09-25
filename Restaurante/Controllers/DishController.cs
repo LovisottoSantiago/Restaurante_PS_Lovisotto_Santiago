@@ -86,7 +86,7 @@ namespace Infrastructure.Controllers
         [SwaggerResponse(StatusCodes.Status409Conflict, "Conflicto - nombre duplicado", typeof(ApiError))]
         [SwaggerResponseExample(StatusCodes.Status409Conflict, typeof(ApiErrorConflictExample))]
         [SwaggerRequestExample(typeof(DishUpdateRequest), typeof(DishUpdateRequestExample))]
-        public async Task<IActionResult> Update(Guid id, [FromBody] DishUpdateRequest request)
+        public async Task<IActionResult> Update(Guid id, [FromBody][Required] DishUpdateRequest request)
         {
             var updated = await _mediator.Send(new UpdateDishCommand(id, request));
             return Ok(updated); // 200

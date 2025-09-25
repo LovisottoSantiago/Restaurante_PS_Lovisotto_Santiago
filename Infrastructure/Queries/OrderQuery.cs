@@ -47,8 +47,7 @@ namespace Infrastructure.Queries
                 .Include(order => order.OrderItems)
                     .ThenInclude(orderItem => orderItem.DishNavigation)
                 .Include(order => order.OrderItems)
-                    .ThenInclude(orderItem => orderItem.StatusNavigation)
-                //.AsNoTracking()
+                    .ThenInclude(orderItem => orderItem.StatusNavigation)                
                 .FirstOrDefaultAsync(order => order.OrderId == orderId, cancellationToken);
         }
         public async Task<bool> ExistsOrderWithDishAsync(Guid dishId, CancellationToken cancellationToken = default)

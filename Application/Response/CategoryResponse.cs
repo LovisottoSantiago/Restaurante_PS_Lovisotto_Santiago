@@ -1,5 +1,4 @@
-﻿
-namespace Application.Response
+﻿namespace Application.Response
 {
     public class CategoryResponse
     {

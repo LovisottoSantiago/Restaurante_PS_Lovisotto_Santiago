@@ -78,6 +78,4 @@ app.MapControllers();
 
 app.Run();
 
-
-// Necesario para los tests con WebApplicationFactory
 public partial class Program { }

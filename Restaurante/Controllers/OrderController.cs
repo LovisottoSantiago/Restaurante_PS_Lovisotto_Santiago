@@ -80,7 +80,7 @@ namespace Restaurante.Controllers
         [SwaggerResponseExample(StatusCodes.Status400BadRequest, typeof(OrderUpdateErrorExamples))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Orden no encontrada", typeof(ApiError))]
         [SwaggerResponseExample(StatusCodes.Status404NotFound, typeof(OrderNotFoundExample))]
-        public async Task<IActionResult> Update(long id, [FromBody] OrderUpdateRequest request)
+        public async Task<IActionResult> Update(long id, [FromBody][Required] OrderUpdateRequest request)
         {
             var response = await _mediator.Send(new UpdateOrderCommand(id, request));
             return Ok(response);

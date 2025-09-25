@@ -21,7 +21,7 @@ namespace Infrastructure.Commands
                 .FirstOrDefaultAsync(oi => oi.OrderItemId == itemId && oi.Order == orderId);
 
             if (item == null)
-                return null; // el Handler
+                return null; 
 
             item.Status = newStatus;
             item.OrderNavigation.UpdateDate = DateTime.UtcNow;

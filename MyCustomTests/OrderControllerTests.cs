@@ -81,7 +81,7 @@ namespace MyCustomTests
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
             var error = await response.Content.ReadFromJsonAsync<ApiError>();
-            error!.Message.Should().Be("El plato especificado no existe o no está disponible");
+            error!.Message.Should().Be("Debe ingresarse un parámetro válido.");
         }
 
         // ---------- 3) 400 INVALID QUANTITY ----------
@@ -154,7 +154,7 @@ namespace MyCustomTests
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
             var error = await response.Content.ReadFromJsonAsync<ApiError>();
-            error!.Message.Should().Be("El plato especificado no existe o no está disponible");
+            error!.Message.Should().Be("Debe ingresarse un parámetro válido.");
         }
 
         // ---------- 6) 400 EMPTY GUID ----------
@@ -176,7 +176,7 @@ namespace MyCustomTests
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
             var error = await response.Content.ReadFromJsonAsync<ApiError>();
-            error!.Message.Should().Be("El plato especificado no existe o no está disponible");
+            error!.Message.Should().Be("Debe ingresarse un parámetro válido.");
         }
 
         // ---------- 7) 200 GET ALL ----------
@@ -316,7 +316,7 @@ namespace MyCustomTests
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var error = await response.Content.ReadFromJsonAsync<ApiError>();
-            error!.Message.Should().Be("El plato especificado no existe o no está disponible");
+            error!.Message.Should().Be("Debe ingresarse un parámetro válido.");
         }
 
         // ---------- 13) 400 ITEMS EMPTY ----------
@@ -333,7 +333,7 @@ namespace MyCustomTests
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var error = await response.Content.ReadFromJsonAsync<ApiError>();
-            error!.Message.Should().Be("El plato especificado no existe o no está disponible");
+            error!.Message.Should().Be("Debe ingresarse un parámetro válido.");
         }
 
 
