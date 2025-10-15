@@ -1,6 +1,4 @@
-﻿using Application.Exceptions;
-using Application.Interfaces.Query;
-using Application.Models;
+﻿using Application.Interfaces.Query;
 using Application.Response;
 using MediatR;
 
