@@ -49,14 +49,11 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// Examples
 builder.Services.AddExamples();
 
-// Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
-// Dependency Injection //
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -73,14 +70,13 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 app.UseAuthorization();
